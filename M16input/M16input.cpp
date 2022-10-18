@@ -9,7 +9,7 @@
 
 M16input::M16input(byte InputPins[8])
 {
-  for (byte i = 0; i < 8; i++) {
+  for (byte i = 0; i < 8; i++) { //Save pins in a private array
     _inputpins[i] = InputPins[i];
   }
   for (byte i = 0; i < 4; i++) {
@@ -19,25 +19,26 @@ M16input::M16input(byte InputPins[8])
   }
 }
 
-
-
-byte M16input::inRead() {
+/* 4 MSB are outputs, 4 LSB are inputs.
+This function tests every combination to detect every
+connection inside the key pad. A high bit means a
+connection on the pin's wire */
+byte M16input::inRead() { 
   byte input = 0;
-  for (byte i = 0; i < 4; i++) {
+  for (byte i = 0; i < 4; i++) {  //for each output
     digitalWrite(_inputpins[i], LOW);
     delay(1);
-    for (byte j = 0; j < 4; j++) {
+    for (byte j = 0; j < 4; j++) {  //test every input for connection
       if (!digitalRead(_inputpins[j + 4])) {
-        input = input | (16 << i) | (1 << j);
+        input = input | (16 << i) | (1 << j); //OR-write result if connection
       }
     }
     digitalWrite(_inputpins[i], HIGH);
-    delay(1);
   }
   return input;
 }
 
-char M16input::translate(byte inbyte) {
+char M16input::translate(byte inbyte) { //Link inRead() output to corresponding key
   switch (inbyte) {
     case 0: return ' ';
     case 17: return '1';
@@ -57,12 +58,12 @@ char M16input::translate(byte inbyte) {
     case 132: return '#';
     case 136: return 'D';
   }
-  return 'n';
+  return 'n'; //Return 'n' if unknown byte
 }
 
 char M16input::button() { //Returns the pressed button on the first cycle of its activation
   _newinput = inRead();
-  if ((_oldinput == 0) && (_newinput != 0)) {
+  if ((_oldinput == 0) && (_newinput != 0)) { //if input used to be null but isn't anymore
     _oldinput = _newinput;
     return translate(_newinput);
   }
