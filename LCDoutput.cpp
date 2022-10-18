@@ -7,7 +7,7 @@
 #include "Arduino.h"
 #include "LCDoutput.h"
 
-LCDoutput::LCDoutput(int RS, int RW, int E, byte DataPins[8]) {
+LCDoutput::LCDoutput(byte RS, byte RW, byte E, byte DataPins[8]) {
   for (byte i = 0; i < 8; i++) {
     _datapins[i] = DataPins[i];
   }
@@ -35,32 +35,32 @@ LCDoutput::LCDoutput(int RS, int RW, int E, byte DataPins[8]) {
 
 void LCDoutput::pulse() {
   delay(1);
-  digitalWrite(E, HIGH);
+  digitalWrite(_e, HIGH);
   delay(1);
-  digitalWrite(E, LOW);
+  digitalWrite(_e, LOW);
   delay(1);
 }
 
 void LCDoutput::dwrite(byte data) {
   for (byte i = 0; i < 8; i++) {
-    digitalWrite(DataPin[i], !!(data & (1 << i)));
+    digitalWrite(_datapins[i], !!(data & (1 << i)));
   }
 }
 
 void LCDoutput::execinstr(byte data) {
-  digitalWrite(RS, LOW);
+  digitalWrite(_rs, LOW);
   dwrite(data);
   pulse();
 }
 
 void LCDoutput::senddata(byte data) {
-  digitalWrite(RS, HIGH);
+  digitalWrite(_rs, HIGH);
   dwrite(data);
   pulse();
 }
 
-void LCDoutput::drawchar(char chr, int pos) {
-  if (pos >= 16) pos+= 48;
+void LCDoutput::drawchar(char chr, byte pos) {
+  if (pos >= 16) pos += 48;
   execinstr(128 | pos);
   senddata(chr);
 }

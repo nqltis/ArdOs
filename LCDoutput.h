@@ -13,17 +13,17 @@ class LCDoutput
 {
     public:
       LCDoutput(byte RS, byte RW, byte E, byte DataPins[8]);
-      drawchar(char chr, byte pos);
-      printScreen(String line1, String line2);
+      void drawchar(char chr, byte pos);
+      void printScreen(String line1, String line2);
     private:
       byte _rs;
       byte _rw;
       byte _e;
       byte _datapins[8];
-      pulse();
-      senddata(byte data);
-      execinstr(byte data);
-      dwrite(byte data);
+      void pulse();
+      void senddata(byte data);
+      void execinstr(byte data);
+      void dwrite(byte data);
 };
 
 #endif
