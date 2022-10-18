@@ -37,6 +37,7 @@ String buff1 = "";
 String buff2 = "";
 void setup() {
   buff2 = readFileName(mempos);
+  lcdoutput.init();
   lcdoutput.printScreen(buff1, buff2);
 }
 

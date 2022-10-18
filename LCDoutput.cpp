@@ -24,6 +24,17 @@ LCDoutput::LCDoutput(byte RS, byte RW, byte E, byte DataPins[8]) {
     pinMode(_datapins[i], OUTPUT);
     digitalWrite(_datapins[i], LOW);
   }
+  //delay(2000);
+  //execinstr(1);    //Clear the screen
+  //execinstr(2);    //Return home
+  //execinstr(6);    //Entry mode
+  //execinstr(14);   //Display on, Cursor on
+  //execinstr(20);   //Enable autoshift right
+  //execinstr(58);   //Function set
+  //execinstr(12);   //Cursor off
+}
+
+void LCDoutput::init() {
   execinstr(1);    //Clear the screen
   execinstr(2);    //Return home
   execinstr(6);    //Entry mode
@@ -55,7 +66,7 @@ void LCDoutput::execinstr(byte data) {
 
 void LCDoutput::senddata(byte data) {
   digitalWrite(_rs, HIGH);
-  dwrite(data);
+  dwrite(data); 
   pulse();
 }
 
