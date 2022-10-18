@@ -2,10 +2,10 @@ CFS16 : 16-bit adresses => 65536 bytes adressables
 65kB max size
 File system description :
 File :
-1B : {MSB = (isDirectory)} name size (bytes)
-?B : name (ASCII) (1B-127B)
-2B : Size of file (0 - 65535)
-2B : EndOfBloc address (0 - 65535)
+1   1B : {MSB = (isDirectory)} name size (bytes)
+'/' ?B : name (ASCII) (1B-127B)
+sz  2B : Size of file (0 - 65535)
+    2B : EndOfBloc address (0 - 65535)
 
 {content}
 

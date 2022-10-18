@@ -53,21 +53,36 @@ void printScreen(String line1, String line2) {
   }
 }
 
+#define fsz 0 //dummy for futur implementation of file size
+
 int mempos = 0;
 char memory[128] = {
-  1, '/', 4, 'h', 'o', 'm', 'e', 6, 's', 'y', 's', 't', 'e', 'm' 
+  1, '/', fsz, fsz, 0, 23, 4, 'h', 
+  'o', 'm', 'e', fsz, fsz, 0, 10, 0, 
+  6, 's', 'y', 's', 't', 'e', 'm', fsz, 
+  fsz, 0, 20, 0, 0
 };
 
-String readFileName(int adress) {
+//nsz, n,a,m,e, fsz, fsz, eob, eob, {ctnt...}, 0
+
+String readFileName(int address) {
   String str = "";
-  int endOfName = adress + memory[adress];
-  for (int i = adress + 1; i <= endOfName; i++) {
+  int endOfName = address + memory[address];
+  for (int i = address + 1; i <= endOfName; i++) {
     str = str + memory[i]; 
   }
   return str;
 }
-int nextFile(int adress) {
-  return adress + memory[adress] + 1;
+int nextFile(int address) {
+  int endOfBlock;
+  int addr;
+  do {
+    addr = address + memory[address] + 3; // address of first byte of eob
+    //        Start of +  Size of name + skip
+    //          file                   file size
+    endOfBlock = (memory[addr] << 8) | memory[addr + 1];
+  } while (endOfBlock);
+  return (addr + 2);
 }
 
 String buff1 = "";
