@@ -4,11 +4,10 @@
   nqltis - 18/10/2022
 */
 
-#include "Arduino.h"
+#include <Arduino.h>
 #include "M16input.h"
 
-M16input::M16input(byte InputPins[8])
-{
+M16input::M16input(byte InputPins[8]) {
   for (byte i = 0; i < 8; i++) { //Save pins in a private array
     _inputpins[i] = InputPins[i];
   }
