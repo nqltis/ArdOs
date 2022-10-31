@@ -19,7 +19,6 @@ LCDoutput lcdoutput(RS, RW, E, DataPin);
 #define fsz 0 //dummy for futur implementation of file size
 #define empt 0 //dummy for empty mem
 
-int mempos = 8;
 char memory[] ={
   129, '/', fsz, fsz, 0, 6, 0, 50,            //0   /{
   131, 'b', 'l', 'g', fsz, fsz, 0, 16,        //8   blg(
@@ -39,7 +38,7 @@ char memory[] ={
   'i', 'n', '(' ,')', ' ', '{', '}', 0,       //112 endof>
   0, 0, 0, 0, 0                               //120 >file - endofusr - endofroot
 };
-int history[32] = {0};
+int history[32];
 byte histPtr = 0;
 
 //{blg{}, LO.txt(), a.txt(hello), usr{a.lua(!#lua5.3), main.c(int main() {})}}
@@ -82,21 +81,43 @@ int nextFile(int address) {
 
 char buff1[16] = "";
 char buff2[16] = "";
-void setup() {
-  readFileName(buff2, mempos);
+void setup() {  
+  history[0] = 8;
+  readFileName(buff2, history[histPtr]);
   lcdoutput.init();
   lcdoutput.printScreen(buff1, buff2);
+}
+
+void printCurrent() {
+  if (!histPtr) {
+    buff1[0] = 0;
+    readFileName(buff2, history[histPtr]);
+    lcdoutput.printScreen(buff1, buff2);
+    return;
+  }
+  readFileName(buff1, history[histPtr - 1]);
+  readFileName(buff2, history[histPtr]);
+  lcdoutput.printScreen(buff1, buff2);
+}
+void selectPrev() {
+  if (histPtr) histPtr--;
+}
+void selectNext() {
+  if (!memory[nextFile(history[histPtr])]) return;
+  history[histPtr + 1] = nextFile(history[histPtr]);
+  histPtr++;
 }
 
 void loop() {
   switch (m16input.button()) {
     case 'B':
-      mempos = nextFile(mempos);
-      if (memory[mempos]) {
-        _strCopy(buff2, buff1);
-        readFileName(buff2, mempos);
-        lcdoutput.printScreen(buff1, buff2);
-      }
+      selectNext();
+      printCurrent();
+    break;
+    case 'A':
+      selectPrev();
+      printCurrent();
     break;
   }
+  delay(10);
 }
