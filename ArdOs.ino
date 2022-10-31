@@ -38,24 +38,47 @@ char memory[] ={
   'i', 'n', '(' ,')', ' ', '{', '}', 0,       //112 endof>
   0, 0, 0, 0, 0                               //120 >file - endofusr - endofroot
 };
-int history[32];
-byte histPtr = 0;
+int wdpath[16];   //working directory path (addresses)
+byte level = 0;   //active wdpath[] index
+int history[32];  //working dir file names
+byte histPtr = 0; //active history[] index
 
 //{blg{}, LO.txt(), a.txt(hello), usr{a.lua(!#lua5.3), main.c(int main() {})}}
 
-//nsz + 128(dir), n,a,m,e, fsz, fsz, red, red
-//eoChunkaddr (2B), {content}, red, red 
-//eob, eob
+int skipHeader(int address) {
+  return address + (memory[address] & 127) + 3;
+}
+int readInt(int address) {
+  return ((memory[address] << 8) | memory[address + 1]);
+}
+int isDir(int address) {
+  return memory[address] & 128;
+}
 
-void _strCopy(char *str1, char *str2) { //copy str1 to str2
+void _strConcat(char *output, char *str2) {
   int i = 0;
-  while (str1[i]) {
-    str2[i] = str1[i];
-    i++;
+  int j = 0;
+  while(output[j]) {
+    j++;
   }
-  str2[i] = 0;
+  i = 0;
+  while(str2[i]) {
+    output[j] = str2[i];
+    i++;
+    j++;
+  }
+  output[j] = 0;
   return;
 }
+int _strCompare(char *str1, char *str2) {
+  int i = 0;
+  while(str1[i] == str2[i]) {
+    if (!(str1[i] || str2[i])) return 1;  //if both char are null, return true
+    i++;
+  }
+  return 0;
+}
+
 void readFileName(char *str, int address) {  //input char[] and file address. 
                                               //write in char[] name of file at address.
   int sizeOfName = memory[address] & 127; //get rid of dir flag
@@ -78,44 +101,84 @@ int nextFile(int address) {
   } while (nextaddr);
   return (addr + 2);
 }
+int findAddr(char *fileName, int dirAddr) { //find memory address of a file in a given directory
+                                            //return 0 if not found
+  int address = dirAddr;
+  address = skipHeader(address); //skip file header
+  address = getContStart(address); //get to content
+  if (!address) return 0; //if null, dir is empty
+  while (readInt(address)) {
+    char tempstr[16]; 
+    readFileName(tempstr, address); //read name
+    if (_strCompare(tempstr, fileName)) return address;
+    address = nextFile(address); //go to next file
+  }
+  return 0; //end of dir
+}
+int getContStart(int address) { //follow redirections until content reached
+                                //if end of file found before any content, return 0
+  int start = readInt(address); //follow first redirection
+  int end = readInt(start);
+  while(1) { //while no null redirect :
+    if (!(start && end)) return 0; //return 0 if end of file
+    if ((start + 2) != end) return (start + 2); //return address if block not empty
+    start = readInt(end);
+    end = readInt(start); 
+  }
+  return 0; //is never reached
+}
 
 char buff1[16] = "";
 char buff2[16] = "";
 void setup() {  
-  history[0] = 8;
-  readFileName(buff2, history[histPtr]);
+  history[0] = 0;
+  wdpath[0] = 0;
   lcdoutput.init();
-  lcdoutput.printScreen(buff1, buff2);
+  printCurrent();
 }
 
 void printCurrent() {
   if (!histPtr) {
-    buff1[0] = 0;
+    //pwd(buff1);
     readFileName(buff2, history[histPtr]);
     lcdoutput.printScreen(buff1, buff2);
+    if (isDir(history[histPtr])) lcdoutput.drawchar('>', 31);
     return;
   }
   readFileName(buff1, history[histPtr - 1]);
   readFileName(buff2, history[histPtr]);
   lcdoutput.printScreen(buff1, buff2);
+  if (isDir(history[histPtr - 1])) lcdoutput.drawchar('>', 15);
+  if (isDir(history[histPtr])) lcdoutput.drawchar('>', 31);
 }
-void selectPrev() {
+void selectPrevFile() {
   if (histPtr) histPtr--;
 }
-void selectNext() {
+void selectNextFile() {
   if (!memory[nextFile(history[histPtr])]) return;
   history[histPtr + 1] = nextFile(history[histPtr]);
   histPtr++;
+}
+void selectNextDir() {
+  if (!isDir(history[histPtr])) return; //if not dir, return
+  int content = getContStart(history[histPtr]);
+  if (!content) {lcdoutput.drawchar('E', 30); return;}; //if dir empty, return
+  histPtr = 0;
+  history[0] = content;
 }
 
 void loop() {
   switch (m16input.button()) {
     case 'B':
-      selectNext();
+      selectNextFile();
       printCurrent();
     break;
     case 'A':
-      selectPrev();
+      selectPrevFile();
+      printCurrent();
+    break;
+    case 'D':
+      selectNextDir();
       printCurrent();
     break;
   }
