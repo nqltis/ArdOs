@@ -36,7 +36,7 @@ char memory[] ={
   'i', 'n', '.', 'c', fsz, fsz, 0, 104,       //96
   0, 120, 'i', 'n', 't', ' ', 'm', 'a',       //104
   'i', 'n', '(' ,')', ' ', '{', '}', 0,       //112 endof>
-  0, 0, 0, 0, 0                               //120 >file - endofusr - endofroot
+  0, 0, 0, 0, 0   ,0 ,0                       //120 >file - endofusr - endofroot - nthing
 };
 int wdpath[16];   //working directory path (addresses)
 byte level = 0;   //active wdpath[] index
@@ -139,7 +139,7 @@ void setup() {
 
 void printCurrent() {
   if (!histPtr) {
-    //pwd(buff1);
+    buff1[0] = 0;
     readFileName(buff2, history[histPtr]);
     lcdoutput.printScreen(buff1, buff2);
     if (isDir(history[histPtr])) lcdoutput.drawchar('>', 31);
@@ -159,22 +159,34 @@ void selectNextFile() {
   history[histPtr + 1] = nextFile(history[histPtr]);
   histPtr++;
 }
+void selectPrevDir() {
+  level--;
+  histPtr = 0;
+  history[0] = wdpath[level - 1];
+}
 void selectNextDir() {
   if (!isDir(history[histPtr])) return; //if not dir, return
-  int content = getContStart(history[histPtr]);
+  int content = skipHeader(history[histPtr]);
+  content = getContStart(content);
   if (!content) {lcdoutput.drawchar('E', 30); return;}; //if dir empty, return
+  wdpath[level] = history[histPtr];   //save selected dir address
+  level++;
   histPtr = 0;
   history[0] = content;
 }
 
 void loop() {
   switch (m16input.button()) {
+    case 'A':
+      selectPrevFile();
+      printCurrent();
+    break;
     case 'B':
       selectNextFile();
       printCurrent();
     break;
-    case 'A':
-      selectPrevFile();
+    case 'C':
+      selectPrevDir();
       printCurrent();
     break;
     case 'D':
