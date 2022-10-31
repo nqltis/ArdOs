@@ -160,17 +160,26 @@ void selectNextFile() {
   histPtr++;
 }
 void selectPrevDir() {
-  level--;
+  switch (level) {
+    case 1:
+      history[0] = 0;
+    break;
+    case 0:
+      return;
+    default:
+      history[0] = getContStart(skipHeader(wdpath[level - 2]));
+  }
   histPtr = 0;
-  history[0] = wdpath[level - 1];
+  level--;
+  return;
 }
 void selectNextDir() {
   if (!isDir(history[histPtr])) return; //if not dir, return
   int content = skipHeader(history[histPtr]);
   content = getContStart(content);
-  if (!content) {lcdoutput.drawchar('E', 30); return;}; //if dir empty, return
-  wdpath[level] = history[histPtr];   //save selected dir address
+  if (!content) {lcdoutput.drawchar('E', 30); delay(1000); return;}; //if dir empty, return
   level++;
+  wdpath[level] = history[histPtr];   //save selected dir address
   histPtr = 0;
   history[0] = content;
 }
