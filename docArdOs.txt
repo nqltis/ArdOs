@@ -1,0 +1,9 @@
+ *  = Ctrl
+ #  = Shift
+ A - D = Functions
+ 0 - 9 = Values
+
+Modes : 
+ - File Browser > File Reader
+ -              > Code editor
+ -              > Executor
