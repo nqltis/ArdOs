@@ -139,7 +139,7 @@ void setup() {
 
 void printCurrent() {
   if (!histPtr) {
-    buff1[0] = 0;
+    buildPath(buff1);
     readFileName(buff2, history[histPtr]);
     lcdoutput.printScreen(buff1, buff2);
     if (isDir(history[histPtr])) lcdoutput.drawchar('>', 31);
@@ -182,6 +182,18 @@ void selectNextDir() {
   wdpath[level] = history[histPtr];   //save selected dir address
   histPtr = 0;
   history[0] = content;
+}
+void buildPath(char *output) {
+  if (!level) {output[0] = 0; return;};
+  output[0] = '/';
+  output[1] = 0;
+  for (int i = 1; i < level; i++) {
+    char tmp[32];
+    readFileName(tmp, wdpath[i+1]);
+    _strConcat(output, tmp);
+    _strConcat(output, "/");
+  }
+  return;
 }
 
 void loop() {
