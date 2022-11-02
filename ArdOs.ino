@@ -64,7 +64,7 @@ void selectPrevDir() {
     case 0:
       return;
     default:
-      history[0] = caofilesys.getContStart(caofilesys.skipHeader(wdpath[level - 2]));
+      history[0] = caofilesys.getContStart(wdpath[level - 2]);
   }
   histPtr = 0;
   level--;
@@ -72,8 +72,7 @@ void selectPrevDir() {
 }
 void selectNextDir() {
   if (!caofilesys.isDir(history[histPtr])) return; //if not dir, return
-  int content = caofilesys.skipHeader(history[histPtr]);
-  content = caofilesys.getContStart(content);
+  int content = caofilesys.getContStart(history[histPtr]);
   if (!content) {lcdoutput.drawchar('E', 30); delay(1000); return;}; //if dir empty, return
   level++;
   wdpath[level] = history[histPtr];   //save selected dir address

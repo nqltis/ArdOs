@@ -86,9 +86,9 @@ int CAOfilesys::findAddr(char *fileName, int dirAddr) { //find memory address of
   return 0; //end of dir
 }
 
-int CAOfilesys::getContStart(int address) { //follow redirections until content reached
+int CAOfilesys::getContStart(int address) { //skip header then follow redirections until content reached
                                 //if end of file found before any content, return 0
-  int start = readInt(address); //follow first redirection
+  int start = readInt(skipHeader(address)); //skip header then follow first redirection
   int end = readInt(start);
   while(1) { //while no null redirect :
     if (!(start && end)) return 0; //return 0 if end of file
