@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "M16input.h"
 #include "LCDoutput.h"
+#include "ustrlib.h"
 
 byte InputPin[8] = {
   0, 1, A5, A4, A3, A2, A1, A0
@@ -15,6 +16,7 @@ byte DataPin[8] = {
 };
 LCDoutput lcdoutput(RS, RW, E, DataPin);
 
+Ustrlib ustrlib;
 
 #define fsz 0 //dummy for futur implementation of file size
 #define empt 0 //dummy for empty mem
@@ -55,30 +57,6 @@ int isDir(int address) {
   return memory[address] & 128;
 }
 
-void _strConcat(char *output, char *str2) {
-  int i = 0;
-  int j = 0;
-  while(output[j]) {
-    j++;
-  }
-  i = 0;
-  while(str2[i]) {
-    output[j] = str2[i];
-    i++;
-    j++;
-  }
-  output[j] = 0;
-  return;
-}
-int _strCompare(char *str1, char *str2) {
-  int i = 0;
-  while(str1[i] == str2[i]) {
-    if (!(str1[i] || str2[i])) return 1;  //if both char are null, return true
-    i++;
-  }
-  return 0;
-}
-
 void readFileName(char *str, int address) {  //input char[] and file address. 
                                               //write in char[] name of file at address.
   int sizeOfName = memory[address] & 127; //get rid of dir flag
@@ -110,7 +88,7 @@ int findAddr(char *fileName, int dirAddr) { //find memory address of a file in a
   while (readInt(address)) {
     char tempstr[16]; 
     readFileName(tempstr, address); //read name
-    if (_strCompare(tempstr, fileName)) return address;
+    if (ustrlib.strCompare(tempstr, fileName)) return address;
     address = nextFile(address); //go to next file
   }
   return 0; //end of dir
@@ -190,8 +168,8 @@ void buildPath(char *output) {
   for (int i = 1; i < level; i++) {
     char tmp[32];
     readFileName(tmp, wdpath[i+1]);
-    _strConcat(output, tmp);
-    _strConcat(output, "/");
+    ustrlib.strConcat(output, tmp);
+    ustrlib.strConcat(output, "/");
   }
   return;
 }
