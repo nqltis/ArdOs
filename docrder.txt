@@ -1,7 +1,0 @@
-File Reader {
-  A : Prev Line
-  B : Next Line
-  C : Close
-  D : //
-}
-
