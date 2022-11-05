@@ -23,7 +23,7 @@ class CAOfilesys
     int getContStart(int address); //follow redirections until content reached
   private:
     char memory[128];
-    Ustrlib ustrlib;
+    Ustrlib caofs_ustrlib;
 };
 
 
