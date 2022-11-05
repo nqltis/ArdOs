@@ -22,7 +22,6 @@ class CAOfilesys
     int findAddr(char *fileName, int dirAddr); //find memory address of a file in a given directory
     int getContStart(int address); //follow redirections until content reached
   private:
-    char memory[128];
     Ustrlib caofs_ustrlib;
 };
 
