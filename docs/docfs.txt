@@ -5,11 +5,27 @@ File :
 1   1B : {MSB = (isDirectory)} name size (bytes)
 '/' ?B : name (ASCII) (1B-127B)
 sz  2B : Size of file (0 - 65535)
-    2B : EndOfBloc address (0 - 65535)
+    2B : Redirection address (0 - 65535) (to next block)
+
+
+
+** Next Block : **
+2B : End of block Address
 
 {content}
 
-EoB : 2B : Addr to next bloc (0 - 65535) or Null
+EoB : 2B : Addr to next bloc (0 - 65535)
 
-Next Bloc:
-2B : EndOfBloc address (0 - 65535)
+
+*
+*
+*
+
+
+** Next Block : **
+2B : EndOfBloc address (0 - 65535) or Null
+
+{content}
+
+EoB : 2B : Null
+[Next file in same directory]
