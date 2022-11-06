@@ -111,7 +111,7 @@ void loop() {
       selectNextDir();
       printCurrent();
     break;
-    case '#' :
+    case '#':                //New file menu    
     {
       delay(10);
       TypeSession typesession;      //Create new input session
@@ -119,7 +119,7 @@ void loop() {
       lcdoutput.printScreen("New file name:", "");
       while (key != '#') {    //press '#' to exit
         switch (key) {
-          case 0:
+          case 0: //no input : do nothing
           break;
           case 'A':
             typesession.eraseChar();
@@ -127,6 +127,12 @@ void loop() {
           break;
           case 'B':
             typesession.nextChar();
+          break;
+          case 'C':
+          break;
+          case 'D':
+          break;
+          case '*':
           break;
           default:
             typesession.enterKey(key);
@@ -136,7 +142,7 @@ void loop() {
         key = m16input.button();
         delay(10);
       }
-      lcdoutput.printScreen("Creating file :", typesession.inputStr);
+      lcdoutput.printScreen("Creating file:", typesession.inputStr);
       delay(2000);
       printCurrent();
       break;
