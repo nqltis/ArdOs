@@ -3,6 +3,7 @@
 #include "LCDoutput.h"
 #include "ustrlib.h"
 #include "CAOfilesys.h"
+#include "T9typelib.h"
 
 byte InputPin[8] = {
   0, 1, A5, A4, A3, A2, A1, A0
@@ -93,7 +94,7 @@ void buildPath(char *output) {
 }
 
 void loop() {
-  switch (m16input.button()) {
+  switch (m16input.button()) {    //File Browser
     case 'A':
       selectPrevFile();
       printCurrent();
@@ -110,6 +111,36 @@ void loop() {
       selectNextDir();
       printCurrent();
     break;
+    case '#' :
+    {
+      delay(10);
+      TypeSession typesession;      //Create new input session
+      char key = m16input.button(); //reset input key
+      lcdoutput.printScreen("New file name:", "");
+      while (key != '#') {    //press '#' to exit
+        switch (key) {
+          case 0:
+          break;
+          case 'A':
+            typesession.eraseChar();
+            lcdoutput.printScreen("New file name:", typesession.inputStr);
+          break;
+          case 'B':
+            typesession.nextChar();
+          break;
+          default:
+            typesession.enterKey(key);
+            lcdoutput.printScreen("New file name:", typesession.inputStr);
+          break;
+        }
+        key = m16input.button();
+        delay(10);
+      }
+      lcdoutput.printScreen("Creating file :", typesession.inputStr);
+      delay(2000);
+      printCurrent();
+      break;
+    }
   }
   delay(10);
 }
