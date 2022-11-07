@@ -16,14 +16,15 @@ CAOfilesys::CAOfilesys() {}
 Ustrlib caofs_ustrlib;
 
 char memory[128] = {
-  129, '/', fsz, fsz, 0, 6, 0, 50,            //0   /{
+  129, '/', fsz, fsz, 0, 6, 0, 52,            //0   /{
   131, 'b', 'l', 'g', fsz, fsz, 0, 16,        //8   blg(
   0, 0, 6, 'L', 'O', '.', 't', 'x',           //16  ), syste
   't', fsz, fsz, 0, 29, 0, 0, 5,              //24  m{>  },
   'a', '.', 't', 'x', 't', fsz, fsz, 0,       //32  a.txt
   41, 0, 48, 'h', 'e', 'l', 'l', 'o',         //40  (hello
-  0, 59, 0, 57,
-                empt, empt, empt, empt,       //48   
+  0, 50, 0, 0, 0, 54, 0, 0,                   //48
+
+  /*Following part of memory is not up to date anymore*/
   empt, 0, 123, 0, 0, 131, 'u', 's',          //56  
   'r', fsz, fsz, 0, 69, 0, 121, 5,            //64
   'm', 'y', 'l', 'u', 'a', fsz, fsz, 0,       //72
