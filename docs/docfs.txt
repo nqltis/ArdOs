@@ -22,10 +22,13 @@ EoB : 2B : Addr to next bloc (0 - 65535)
 *
 
 
-** Next Block : **
+** Last block : **
 2B : EndOfBloc address (0 - 65535) or Null
 
 {content}
 
-EoB : 2B : Null
+EoB : 2B : Addr to end of file (0 - 65535)
+
+
+End of file : 0x0000
 [Next file in same directory]
