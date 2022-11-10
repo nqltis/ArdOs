@@ -22,15 +22,15 @@ Ustrlib ustrlib;
 CAOfilesys caofilesys;
 
 int wdpath[16];   //working directory path (addresses)
-byte level = 0;   //active wdpath[] index
+byte level = 1;   //active wdpath[] index
 int history[32];  //working dir file names
 byte histPtr = 0; //active history[] index
 
 char buff1[16] = "";
 char buff2[16] = "";
 void setup() {  
-  history[0] = 0;
-  wdpath[0] = 0;
+  history[0] = caofilesys.getContStart(0);
+  wdpath[1] = 0;
   lcdoutput.init();
   printCurrent();
 }
