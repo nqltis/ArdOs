@@ -53,8 +53,8 @@ void selectPrevFile() {
   if (histPtr) histPtr--;
 }
 void selectNextFile() {
-  if (!caofilesys.readInt(caofilesys.nextFile(history[histPtr]))) return;
-  history[histPtr + 1] = caofilesys.nextFile(history[histPtr]);
+  if (!caofilesys.readInt(caofilesys.nextFile(history[histPtr], 8))) return; //TODO : remove readInt()
+  history[histPtr + 1] = caofilesys.nextFile(history[histPtr], 8);
   histPtr++;
 }
 void selectPrevDir() {

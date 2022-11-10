@@ -24,7 +24,7 @@ char memory[128] = {
   41, 0, 48, 'h', 'e', 'l', 'l', 'o',         //40  (hello
   0, 50, 0, 0, 0, 54, 0, 0,                   //48
 
-  /*Following part of memory is not up to date anymore*/
+  /*Following part of memory is not following new fs rules*/
   empt, 0, 123, 0, 0, 131, 'u', 's',          //56  
   'r', fsz, fsz, 0, 69, 0, 121, 5,            //64
   'm', 'y', 'l', 'u', 'a', fsz, fsz, 0,       //72
@@ -58,7 +58,7 @@ void CAOfilesys::readFileName(char *str, int address) {  //input char[] and file
   return;
 }
 
-int CAOfilesys::nextFile(int address) {
+int CAOfilesys::nextFile(int address, int dirAddr) {  //return next file address if not at end of working directory
   int addr = 0;
   int nextaddr = address;
   int nsize = memory[nextaddr] & 127; //get rid of dir flag 
@@ -69,6 +69,8 @@ int CAOfilesys::nextFile(int address) {
     addr = nextaddr;
     nextaddr = (memory[nextaddr] << 8) | memory[nextaddr + 1]; //read address of endofblock
   } while (nextaddr);
+  //At this point, next file should be at address (addr+2)
+
   return (addr + 2);
 }
 
@@ -78,11 +80,11 @@ int CAOfilesys::findAddr(char *fileName, int dirAddr) { //find memory address of
   address = skipHeader(address); //skip file header
   address = getContStart(address); //get to content
   if (!address) return 0; //if null, dir is empty
-  while (readInt(address)) {
+  while (readInt(address)) {  //TODO : remove readInt()
     char tempstr[16]; 
     readFileName(tempstr, address); //read name
     if (caofs_ustrlib.strCompare(tempstr, fileName)) return address;
-    address = nextFile(address); //go to next file
+    address = nextFile(address, dirAddr); //go to next file
   }
   return 0; //end of dir
 }

@@ -18,7 +18,7 @@ class CAOfilesys
     int readInt(int address);
     int isDir(int address);   //Check if given file is a directory
     void readFileName(char *str, int address);  //input char[] and file address. 
-    int nextFile(int address);
+    int nextFile(int address, int dirAddr);
     int findAddr(char *fileName, int dirAddr); //find memory address of a file in a given directory
     int getContStart(int address); //follow redirections until content reached
   private:
