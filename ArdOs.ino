@@ -58,15 +58,8 @@ void selectNextFile() {
   histPtr++;
 }
 void selectPrevDir() {
-  switch (level) {
-    case 1:
-      history[0] = 0;
-    break;
-    case 0:
-      return;
-    default:
-      history[0] = caofilesys.getContStart(wdpath[level - 2]);
-  }
+  if (level <= 1) return;
+  history[0] = caofilesys.getContStart(wdpath[level - 2]);
   histPtr = 0;
   level--;
   return;
