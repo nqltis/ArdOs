@@ -111,7 +111,7 @@ void loop() {
       TypeSession typesession;      //Create new input session
       char key = m16input.button(); //reset input key
       lcdoutput.printScreen("New file name:", "");
-      while (key != '#') {    //press '#' to exit
+      while (key != 'D') {    //press 'D' to exit
         switch (key) {
           case 0: //no input : do nothing
           break;
@@ -122,9 +122,11 @@ void loop() {
           case 'B':
             typesession.nextChar();
           break;
-          case 'C':
+          case 'C': //TODO : Cancel
           break;
-          case 'D':
+          case '#': //Shift
+            typesession.chgCase();
+            lcdoutput.printScreen("New file name:", typesession.inputStr);
           break;
           case '*':
           break;

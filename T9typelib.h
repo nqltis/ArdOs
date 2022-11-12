@@ -14,6 +14,7 @@ class TypeSession {
     void eraseChar();
     void nextChar();
     char inputStr[17];
+    void chgCase();
   private:
     int _index;
     char _activeKey;
