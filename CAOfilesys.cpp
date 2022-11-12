@@ -15,25 +15,25 @@ CAOfilesys::CAOfilesys() {}
 
 Ustrlib caofs_ustrlib;
 
-char memory[128] = {
-  129, '/', fsz, fsz, 0, 6, 0, 52,            //0   /{
+unsigned char memory[] = {
+  129, '/', fsz, fsz, 0, 6, 0, 50,            //0   /{
   131, 'b', 'l', 'g', fsz, fsz, 0, 16,        //8   blg(
   0, 0, 6, 'L', 'O', '.', 't', 'x',           //16  ), syste
   't', fsz, fsz, 0, 29, 0, 0, 5,              //24  m{>  },
   'a', '.', 't', 'x', 't', fsz, fsz, 0,       //32  a.txt
   41, 0, 48, 'h', 'e', 'l', 'l', 'o',         //40  (hello
-  0, 50, 0, 0, 0, 54, 0, 0,                   //48
+  0, 57, 0, 55, empt, empt, empt, 0,                   //48
 
-  /*Following part of memory is not following new fs rules*/
-  empt, 0, 123, 0, 0, 131, 'u', 's',          //56  
-  'r', fsz, fsz, 0, 69, 0, 121, 5,            //64
+  129, 0, 0, 131, 'u', 's', 'r', fsz,          //56  
+  fsz, 0, 69, empt, empt, 0, 125, 5,            //64
   'm', 'y', 'l', 'u', 'a', fsz, fsz, 0,       //72
   81, 0, 91, '!', '#', 'l', 'u', 'a',         //80
-  '5', '.', '3', 0, 0, 6, 'm', 'a',           //88
-  'i', 'n', '.', 'c', fsz, fsz, 0, 104,       //96
-  0, 120, 'i', 'n', 't', ' ', 'm', 'a',       //104
-  'i', 'n', '(' ,')', ' ', '{', '}', 0,       //112 endof>
-  0, 0, 0, 0, 0   ,0 ,0                       //120 >file - endofusr - endofroot - nthing
+  '5', '.', '3', 0, 93, 0, 0, 6,            //88
+  'm', 'a', 'i', 'n', '.', 'c', fsz, fsz,        //96
+  0, 106, 0, 121, 'i', 'n', 't', ' ',        //104
+  'm', 'a', 'i', 'n', '(' ,')', ' ', '{',       //112
+  '}', 0, 123, 0, 0, 0, 127, 0,                       //120
+  0, 0, 131, 0, 0
 };
 
 //{blg{}, LO.txt(), a.txt(hello), usr{a.lua(!#lua5.3), main.c(int main() {})}}
@@ -58,20 +58,35 @@ void CAOfilesys::readFileName(char *str, int address) {  //input char[] and file
   return;
 }
 
-int CAOfilesys::nextFile(int address, int dirAddr) {  //return next file address if not at end of working directory
+int CAOfilesys::nextFile(int address, int parentDirAddr) {  //return next file address if not at end of working directory
   int addr = 0;
   int nextaddr = address;
   int nsize = memory[nextaddr] & 127; //get rid of dir flag 
-  nextaddr += nsize + 3;    //address of eob
+  nextaddr += nsize + 3;    //address of redirect
   //  Start of +  Size of name + skip
   //    file                   file size
-  do {
+  do {  //follow redirections until endoffile
     addr = nextaddr;
     nextaddr = (memory[nextaddr] << 8) | memory[nextaddr + 1]; //read address of endofblock
   } while (nextaddr);
   //At this point, next file should be at address (addr+2)
+  addr += 2;
+  if (addr == endDir(parentDirAddr)) return 0; //end of directory
+  return (addr);
+}
 
-  return (addr + 2);
+//Only used by nextfile() to detect end of working directory, dir must not be empty
+int CAOfilesys::endDir(int address) {  //return end address of working dir last block
+  int nsize = memory[address] & 127;        //get rid of dir flag 
+  int newHeaderPtr = readInt(address + nsize + 3);
+  int newHeaderVal = readInt(newHeaderPtr);
+  int eobPtr;
+  while (newHeaderVal) { //follow redirections until endofdir
+    eobPtr = newHeaderVal; // = old header ptr
+    newHeaderPtr = readInt(eobPtr);
+    newHeaderVal = readInt(newHeaderPtr);
+  }
+  return eobPtr;
 }
 
 int CAOfilesys::findAddr(char *fileName, int dirAddr) { //find memory address of a file in a given directory
