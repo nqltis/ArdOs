@@ -22,18 +22,18 @@ unsigned char memory[] = {
   't', fsz, fsz, 0, 29, 0, 0, 5,              //24  m{>  },
   'a', '.', 't', 'x', 't', fsz, fsz, 0,       //32  a.txt
   41, 0, 48, 'h', 'e', 'l', 'l', 'o',         //40  (hello
-  0, 57, 0, 55, empt, empt, empt, 0,                   //48
+  0, 57, 0, 55, empt, empt, empt, 0,          //48
 
-  129, 0, 0, 131, 'u', 's', 'r', fsz,          //56  
-  fsz, 0, 69, empt, empt, 0, 125, 5,            //64
+  129, 0, 0, 131, 'u', 's', 'r', fsz,         //56  
+  fsz, 0, 69, empt, empt, 0, 125, 5,          //64
   'm', 'y', 'l', 'u', 'a', fsz, fsz, 0,       //72
   81, 0, 91, '!', '#', 'l', 'u', 'a',         //80
-  '5', '.', '3', 0, 93, 0, 0, 6,            //88
-  'm', 'a', 'i', 'n', '.', 'c', fsz, fsz,        //96
-  0, 106, 0, 121, 'i', 'n', 't', ' ',        //104
-  'm', 'a', 'i', 'n', '(' ,')', ' ', '{',       //112
-  '}', 0, 123, 0, 0, 0, 127, 0,                       //120
-  0, 0, 131, 0, 0
+  '5', '.', '3', 0, 93, 0, 0, 6,              //88
+  'm', 'a', 'i', 'n', '.', 'c', fsz, fsz,     //96
+  0, 106, 0, 121, 'i', 'n', 't', ' ',         //104
+  'm', 'a', 'i', 'n', '(' ,')', ' ', '{',     //112
+  '}', 0, 123, 0, 0, 0, 127, 0,               //120
+  0, 0, 131, 0, 0                             //128
 };
 
 //{blg{}, LO.txt(), a.txt(hello), usr{a.lua(!#lua5.3), main.c(int main() {})}}
@@ -47,10 +47,13 @@ int CAOfilesys::readInt(int address) {
 int CAOfilesys::isDir(int address) {
   return memory[address] & 128;
 }
+int CAOfilesys::readNameSize(int address) {
+  return memory[address] & 127;
+}
 
 void CAOfilesys::readFileName(char *str, int address) {  //input char[] and file address. 
                                               //write in char[] name of file at address.
-  int sizeOfName = memory[address] & 127; //get rid of dir flag
+  int sizeOfName = readNameSize(address); //get rid of dir flag
   for (int i = 1; i <= sizeOfName; i++) {
     str[i - 1] = memory[address + i]; 
   }
@@ -59,25 +62,20 @@ void CAOfilesys::readFileName(char *str, int address) {  //input char[] and file
 }
 
 int CAOfilesys::nextFile(int address, int parentDirAddr) {  //return next file address if not at end of working directory
-  int addr = 0;
-  int nextaddr = address;
-  int nsize = memory[nextaddr] & 127; //get rid of dir flag 
-  nextaddr += nsize + 3;    //address of redirect
-  //  Start of +  Size of name + skip
-  //    file                   file size
+  int nsize = readNameSize(address); //get rid of dir flag 
+  int nextaddr = address + nsize + 3;    //address of redirect
   do {  //follow redirections until endoffile
-    addr = nextaddr;
-    nextaddr = (memory[nextaddr] << 8) | memory[nextaddr + 1]; //read address of endofblock
+    address = nextaddr; 
+    nextaddr = readInt(nextaddr); //read address of endofblock
   } while (nextaddr);
-  //At this point, next file should be at address (addr+2)
-  addr += 2;
-  if (addr == endDir(parentDirAddr)) return 0; //end of directory
-  return (addr);
+  address += 2; //go to first byte after 
+  if (address == endDir(parentDirAddr)) return 0; //end of directory
+  return (address);
 }
 
 //Only used by nextfile() to detect end of working directory, dir must not be empty
 int CAOfilesys::endDir(int address) {  //return end address of working dir last block
-  int nsize = memory[address] & 127;        //get rid of dir flag 
+  int nsize = readNameSize(address);        //get rid of dir flag 
   int newHeaderPtr = readInt(address + nsize + 3);
   int newHeaderVal = readInt(newHeaderPtr);
   int eobPtr;

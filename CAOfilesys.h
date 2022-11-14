@@ -23,6 +23,7 @@ class CAOfilesys
     int getContStart(int address); //follow redirections until content reached
   private:
     int endDir(int address);
+    int readNameSize(int address);
     Ustrlib caofs_ustrlib;
 };
 
