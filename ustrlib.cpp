@@ -4,7 +4,6 @@
   nqltis - 02/11/2022
 */
 
-#include <Arduino.h>
 #include "ustrlib.h"
 
 Ustrlib::Ustrlib() {
@@ -24,7 +23,7 @@ int Ustrlib::strSplit(char *buff, char *str, int index) { //split str with / and
   int match = 0;
   while (index) {
     if (str[match] == '/') index--;
-    if (str[match] == 0) return 0; //if not found return 0
+    else if (!str[match]) return 0; //if not found return 0
     match++;
   }
   int i = 0;
@@ -37,16 +36,13 @@ int Ustrlib::strSplit(char *buff, char *str, int index) { //split str with / and
 }
 
 void Ustrlib::strConcat(char *output, char *str2) {
-  int i = 0;
   int j = 0;
   while(output[j]) {
     j++;
   }
-  i = 0;
+  int i = 0;
   while(str2[i]) {
-    output[j] = str2[i];
-    i++;
-    j++;
+    output[j++] = str2[i++];
   }
   output[j] = 0;
   return;

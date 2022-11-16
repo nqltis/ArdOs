@@ -7,8 +7,6 @@
 #ifndef Ustrlib_h
 #define Ustrlib_h
 
-#include <Arduino.h>
-
 class Ustrlib
 {
   public:
