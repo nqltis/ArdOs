@@ -53,9 +53,6 @@ I : Integer
 
 ## System calls :
 
-R : Register Address
-I : Integer
-
 #### General
 
 |Keyword  |Description |
