@@ -1,12 +1,25 @@
-# Emulated Programming Language
+# Operating System and Code Execution
 
-Programming language is based on Instruction List (IL)
-General instructions are written in uppercase whereas system calls are written in lowercase.
+## Task Resources
+The microcontroller's dynamic memory can store 2048 bytes of data. Let's say half of that is used by the operating system itself, then 1024 bytes can be used as user memory for programs. I want programs to be able to call other programs, to use them as functions for example. Programs will be able to allocate chunks of memory within these 1024 available bytes. 
+
+## Task Abilities
+Programs will be able to use the kernel for certain operations using system calls : 
+* Input using buttons
+* Output using the screen display
+* Input/Output using on-board pins
+* File access
+* Execution of other programs
+
+## Emulated Programming Language
+
+Programming language is based on *Instruction List* (IL)
+**General instructions** are written in **uppercase** whereas **system calls** are written in **lowercase**.
 
 R : Register Address
 I : Integer
 
-## General Instructions
+### General Instructions
 
 
 #### Load and Store Instructions
@@ -51,7 +64,7 @@ I : Integer
 |`JMPC L`| Jump if test is `TRUE` 
 |`JMPNC L`| Jump if test is `FALSE`
 
-## System calls :
+### System calls :
 
 #### General
 
