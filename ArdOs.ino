@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include "M16input.h"
 #include "LCDoutput.h"
-#include "ustrlib.h"
 #include "CAOfilesys.h"
+#include "ustrlib.h"
 #include "T9typelib.h"
 
 byte InputPin[8] = {
@@ -18,7 +18,6 @@ byte DataPin[8] = {
 };
 LCDoutput lcdoutput(RS, RW, E, DataPin);
 
-Ustrlib ustrlib;
 CAOfilesys caofilesys;
 
 int wdpath[16];   //working directory path (addresses)
@@ -81,8 +80,8 @@ void buildPath(char *output) {
   for (int i = 1; i < level; i++) {
     char tmp[32];
     caofilesys.readFileName(tmp, wdpath[i+1]);
-    ustrlib.strConcat(output, tmp);
-    ustrlib.strConcat(output, "/");
+    strConcat(output, tmp);
+    strConcat(output, "/");
   }
   return;
 }

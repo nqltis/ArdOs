@@ -4,7 +4,6 @@
   nqltis - 02/11/2022
 */
 
-#include <Arduino.h>
 #include "ustrlib.h"
 #include "CAOfilesys.h"
 
@@ -12,8 +11,6 @@
 #define empt 0 //dummy for empty mem
 
 CAOfilesys::CAOfilesys() {}
-
-Ustrlib caofs_ustrlib;
 
 unsigned char memory[] = {
   129, '/', fsz, fsz, 0, 6, 0, 50,            //0   /{
@@ -96,7 +93,7 @@ int CAOfilesys::findAddr(char *fileName, int dirAddr) { //find memory address of
   while (readInt(address)) {  //TODO : remove readInt()
     char tempstr[16]; 
     readFileName(tempstr, address); //read name
-    if (caofs_ustrlib.strCompare(tempstr, fileName)) return address;
+    if (strCompare(tempstr, fileName)) return address;
     address = nextFile(address, dirAddr); //go to next file
   }
   return 0; //end of dir

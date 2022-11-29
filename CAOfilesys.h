@@ -7,7 +7,6 @@
 #ifndef CAOfilesys_h
 #define CAOfilesys_h
 
-#include <Arduino.h>
 #include "ustrlib.h"
 
 class CAOfilesys
@@ -24,7 +23,6 @@ class CAOfilesys
   private:
     int endDir(int address);
     int readNameSize(int address);
-    Ustrlib caofs_ustrlib;
 };
 
 
