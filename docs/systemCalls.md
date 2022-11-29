@@ -2,11 +2,12 @@
 
 R : Register Address
 I : Integer
+
 #### General
 
 |Keyword  |Description |
 |---------|------------|
-|`slp I`  |sleep for a specified amount of time (I milliseconds)
+|`slp I/R`  |sleep for a specified amount of time (I milliseconds)
 |`ext`		|exit program
 
 #
@@ -41,5 +42,6 @@ I : Integer
 |---------|------------|
 |`opn STR`|open file at path `STR`
 |`clo`		|close file 
-|`lod I/R I`|load next `I/R` bytes of data from current file onto memory at adress `I`
-|`exe STR`|execute program at path `STR`
+|`ldd I/R I`|load next `I/R` bytes of data from current file onto memory at adress `I`
+|`opp STR`|prepare execution of program at path `STR` by allocating its memory. Values can be entered before its execution
+|`exe`    |execute loaded program
