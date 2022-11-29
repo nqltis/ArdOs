@@ -13,7 +13,7 @@ Programs will be able to use the kernel for certain operations using system call
 
 ## Emulated Programming Language
 
-Programming language is based on *Instruction List* (IL)
+Programming language is based on *Instruction List* (IL).
 **General instructions** are written in **uppercase** whereas **system calls** are written in **lowercase**.
 
 R : Register Address
