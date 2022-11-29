@@ -9,4 +9,6 @@ You can use this code freely anywhere, it is not very complex anyway. It may not
 I've written all this code by myself and did not plan at first to let anyone read it. 
 The whole code is segmented into libraries for better understanding and clearer code, feel free to use what you need.
 
+Some documentation can be found in the *docs* directory.
+
 If you have any question and/or advice, please ask me.
