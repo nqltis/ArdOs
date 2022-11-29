@@ -45,3 +45,4 @@ I : Integer
 |`ldd I/R I`|load next `I/R` bytes of data from current file onto memory at adress `I`
 |`opp STR`|prepare execution of program at path `STR` by allocating its memory. Values can be entered before its execution
 |`exe`    |execute loaded program
+|`pss`    |end current program then execute loaded program
