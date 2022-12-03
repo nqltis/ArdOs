@@ -34,10 +34,18 @@ static unsigned char memory[] = {
 };
 
 //{blg{}, LO.txt(), a.txt(hello), usr{a.lua(!#lua5.3), main.c(int main() {})}}
+/*
+File::File(FS_SIZE _address, File parentDir) {
 
-File::File(FS_SIZE _address, FS_SIZE _parentDirAddr) {
-  address = _address;
-  parentDirAddr = _parentDirAddr;
+}
+
+File::File(char *path) {
+
+}*/
+
+File::File(FS_SIZE _address) {
+  path[0] = _address;
+  level = 1;
 }
 
 int File::skipHeader(int address) {
@@ -115,4 +123,17 @@ int File::getContStart(int address) { //skip header then follow redirections unt
     end = readInt(start); 
   }
   return 0; //is never reached
+}
+
+void File::getPathString(char *output) {
+  if (!level) {output[0] = 0; return;};
+  output[0] = '/';
+  output[1] = 0;
+  for (int i = 1; i < level; i++) {
+    char tmp[32];
+    readFileName(tmp, path[i+1]);
+    strConcat(output, tmp);
+    strConcat(output, "/");
+  }
+  return;
 }

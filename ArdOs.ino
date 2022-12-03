@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "M16input.h"
 #include "LCDoutput.h"
-#include "CAOfilesys.h"
+#include "Filesysv2.h"
 #include "ustrlib.h"
 #include "T9typelib.h"
 
@@ -18,7 +18,9 @@ byte DataPin[8] = {
 };
 LCDoutput lcdoutput(RS, RW, E, DataPin);
 
-CAOfilesys caofilesys;
+File caofilesys(0);
+
+File selectedFile(0);
 
 int wdpath[16];   //working directory path (addresses)
 byte level = 1;   //active wdpath[] index
@@ -36,9 +38,11 @@ void setup() {
 
 void printCurrent() {
   if (!histPtr) {
-    buildPath(buff1);
+    selectedFile.getPathString(buff1);
+    
     caofilesys.readFileName(buff2, history[histPtr]);
     lcdoutput.printScreen(buff1, buff2);
+    delay(3000);
     if (caofilesys.isDir(history[histPtr])) lcdoutput.drawchar('>', 31);
     return;
   }
@@ -72,18 +76,6 @@ void selectNextDir() {
   wdpath[level] = history[histPtr];   //save selected dir address
   histPtr = 0;
   history[0] = content;
-}
-void buildPath(char *output) {
-  if (!level) {output[0] = 0; return;};
-  output[0] = '/';
-  output[1] = 0;
-  for (int i = 1; i < level; i++) {
-    char tmp[32];
-    caofilesys.readFileName(tmp, wdpath[i+1]);
-    strConcat(output, tmp);
-    strConcat(output, "/");
-  }
-  return;
 }
 
 void loop() {
