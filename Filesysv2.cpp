@@ -170,6 +170,16 @@ void File::getParentString(char *output) {
   return;
 }
 
+File File::getParentDir() {
+  if (level <= 0) return File();
+  File parent;
+  for (char i = 0; i < level; i++) {
+    parent.path[i] = path[i];
+  }
+  parent.level = level - 1;
+  return parent;
+}
+
 File File::enterDir() {
   int nextFile = getContStart();
   if (nextFile) {

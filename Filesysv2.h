@@ -10,6 +10,7 @@
 
 #include "ustrlib.h"
 #define FS_SIZE int //Size of pointers (limits memory size)
+#define FS_DEPTH 8 //Maximum depth of file system (Max level of dir tree)
 
 class File
 {
@@ -26,11 +27,11 @@ class File
     int getContStart(); //follow redirections until content reached
     void getPathString(char *output);
     void getParentString(char *output);
-    File getDirContent();
+    File getParentDir();
     File enterDir();
     File copyFile();
   private:
-    FS_SIZE path[16];
+    FS_SIZE path[FS_DEPTH];
     char level;
     int findAddr(char *fileName, int dirAddr);
     int skipHeader(int address);

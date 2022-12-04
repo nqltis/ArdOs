@@ -66,14 +66,12 @@ void selectNextFile() {
   selectedFile = next;
   fileIndex++;
 }
-/*
 void selectPrevDir() {
-  if (level <= 1) return;
-  history[0] = caofilesys.getContStart(wdpath[level - 2]);
-  histPtr = 0;
-  level--;
-  return;
-}*/
+  File parent = selectedFile.getParentDir();
+  if (!parent.isValid()) return;
+  selectedFile = selectedFile.getParentDir();
+  fileIndex = 0;
+}
 void selectNextDir() {
   if (!selectedFile.isDir()) return; //if not dir, return
   File content = selectedFile.enterDir();
@@ -93,7 +91,7 @@ void loop() {
       printCurrent();
     break;
     case 'C':
-      //selectPrevDir();
+      selectPrevDir();
       printCurrent();
     break;
     case 'D':
