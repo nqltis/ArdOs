@@ -73,6 +73,9 @@ int File::isDir() {
 int File::getNameSize() {
   return memory[path[level]] & 127;
 }
+int File::isValid() {
+  if (level < 0) return 0; return 1;
+}
 
 //TODO: Remove this function by adapting library
 void File::getName(char *str, int address) {

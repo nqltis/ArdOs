@@ -67,14 +67,12 @@ void selectNextFile() {
   lcdoutput.drawchar('n', 30);
   delay(500);
   File next = selectedFile.nextFile();
+  if (!next.isValid()) return;
   shadowFile = selectedFile;
   selectedFile = next;
   fileIndex++;
   lcdoutput.drawchar('B', 30);
-  delay(1000);
-  //if (!nextfile) return;
-  //history[histPtr + 1] = nextfile;
-  //histPtr++;
+  delay(500);
 }
 void selectPrevDir() {
   if (level <= 1) return;

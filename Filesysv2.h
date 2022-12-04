@@ -21,7 +21,7 @@ class File
     void getName(char *str, int address);  //input char[] and file address. 
     void getName(char *str);  //input char[] and file address. 
     int isDir();   //Check if given file is a directory
-    int isValid(int address); //Check if the file built from a char or address does actually exist
+    int isValid(); //Check if the file built from a char or address does actually exist
     File nextFile();
     int getContStart(int address); //follow redirections until content reached
     void getPathString(char *output);
