@@ -2,7 +2,6 @@
 #include "M16input.h"
 #include "LCDoutput.h"
 #include "Filesysv2.h"
-#include "CAOfilesys.h"
 #include "ustrlib.h"
 #include "T9typelib.h"
 
@@ -11,31 +10,22 @@ const byte InputPin[8] = {
 };
 M16input m16input(InputPin);
 
-byte RS = 13;   //Register Select: H:data L:Instruction 
-byte RW = 12;   //H:Read L:Write
-byte E = 11;    //Enable Signal
-byte DataPin[8] = {
+const byte RS = 13;   //Register Select: H:data L:Instruction 
+const byte RW = 12;   //H:Read L:Write
+const byte E = 11;    //Enable Signal
+const byte DataPin[8] = {
   8, 9, 2, 3, 4, 5, 6, 7
 };
 LCDoutput lcdoutput(RS, RW, E, DataPin);
 
-CAOfilesys caofilesys;
-
 File selectedFile(0); //root
 File shadowFile; //empty File
-
-int wdpath[16];   //working directory path (addresses)
-byte level = 1;   //active wdpath[] index
-int history[32];  //working dir file names
-byte histPtr = 0; //active history[] index
 
 byte fileIndex = 0; //Selected File index in directory
 
 char buff1[16] = "";
 char buff2[16] = "";
 void setup() {  
-  history[0] = caofilesys.getContStart(0);
-  wdpath[1] = 0;
   selectedFile = selectedFile.enterDir();
   lcdoutput.init();
   printCurrent();
