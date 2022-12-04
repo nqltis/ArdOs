@@ -6,7 +6,7 @@
 #include "ustrlib.h"
 #include "T9typelib.h"
 
-byte InputPin[8] = {
+const byte InputPin[8] = {
   0, 1, A5, A4, A3, A2, A1, A0
 };
 M16input m16input(InputPin);
@@ -55,10 +55,11 @@ void printCurrent() {
   if (shadowFile.isDir()) lcdoutput.drawchar('>', 15);
   if (selectedFile.isDir()) lcdoutput.drawchar('>', 31);
 }
-/*
 void selectPrevFile() {
-  if (histPtr) histPtr--;
-}*/
+  selectedFile = selectedFile.getParentDir(); //Exit then enter dir
+  selectedFile = selectedFile.enterDir();
+  fileIndex = 0;
+}
 void selectNextFile() {
   File next = selectedFile.getNextFile();
   if (!next.isValid()) return;
@@ -83,7 +84,7 @@ void selectNextDir() {
 void loop() {
   switch (m16input.button()) {    //File Browser
     case 'A':
-      //selectPrevFile();
+      selectPrevFile();
       printCurrent();
     break;
     case 'B':
