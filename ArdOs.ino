@@ -2,6 +2,7 @@
 #include "M16input.h"
 #include "LCDoutput.h"
 #include "Filesysv2.h"
+#include "CAOfilesys.h"
 #include "ustrlib.h"
 #include "T9typelib.h"
 
@@ -18,39 +19,42 @@ byte DataPin[8] = {
 };
 LCDoutput lcdoutput(RS, RW, E, DataPin);
 
-File caofilesys(0);
+CAOfilesys caofilesys;
 
-File selectedFile(0);
+File selectedFile(0); //root
+File shadowFile(0); //empty File
 
 int wdpath[16];   //working directory path (addresses)
 byte level = 1;   //active wdpath[] index
 int history[32];  //working dir file names
 byte histPtr = 0; //active history[] index
 
+byte fileIndex = 0; //Selected File index in directory
+
 char buff1[16] = "";
 char buff2[16] = "";
 void setup() {  
   history[0] = caofilesys.getContStart(0);
   wdpath[1] = 0;
+
+  selectedFile.enterDir();
   lcdoutput.init();
   printCurrent();
 }
 
 void printCurrent() {
-  if (!histPtr) {
-    selectedFile.getPathString(buff1);
-    
-    caofilesys.readFileName(buff2, history[histPtr]);
+  if (!fileIndex) {
+    selectedFile.getParentString(buff1);
+    selectedFile.getName(buff2);
     lcdoutput.printScreen(buff1, buff2);
-    delay(3000);
-    if (caofilesys.isDir(history[histPtr])) lcdoutput.drawchar('>', 31);
+    if (selectedFile.isDir()) lcdoutput.drawchar('>', 31);
     return;
   }
-  caofilesys.readFileName(buff1, history[histPtr - 1]);
-  caofilesys.readFileName(buff2, history[histPtr]);
+  shadowFile.getName(buff1);
+  selectedFile.getName(buff2);
   lcdoutput.printScreen(buff1, buff2);
-  if (caofilesys.isDir(history[histPtr - 1])) lcdoutput.drawchar('>', 15);
-  if (caofilesys.isDir(history[histPtr])) lcdoutput.drawchar('>', 31);
+  if (shadowFile.isDir()) lcdoutput.drawchar('>', 15);
+  if (selectedFile.isDir()) lcdoutput.drawchar('>', 31);
 }
 void selectPrevFile() {
   if (histPtr) histPtr--;

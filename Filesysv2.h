@@ -17,12 +17,14 @@ class File
     File(FS_SIZE address, File *parentDir);
     File(char *path); //get to file from path
     File(FS_SIZE address); //Create parentless file (root)
-    void readFileName(char *str, int address);  //input char[] and file address. 
-    int isDir(int address);   //Check if given file is a directory
+    void getName(char *str, int address);  //input char[] and file address. 
+    void getName(char *str);  //input char[] and file address. 
+    int isDir();   //Check if given file is a directory
     int isValid(int address); //Check if the file built from a char or address does actually exist
     int nextFile(int address, int dirAddr);
     int getContStart(int address); //follow redirections until content reached
     void getPathString(char *output);
+    void getParentString(char *output);
     void enterDir();
     void exitDir();
     void selectNextFile(); 
@@ -33,7 +35,7 @@ class File
     int skipHeader(int address);
     int readInt(int address);
     int endDir(int address);
-    int readNameSize(int address);
+    int getNameSize(int address);
 };
 
 
