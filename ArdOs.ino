@@ -73,16 +73,14 @@ void selectPrevDir() {
   histPtr = 0;
   level--;
   return;
-}
-void selectNextDir() {
-  if (!caofilesys.isDir(history[histPtr])) return; //if not dir, return
-  int content = caofilesys.getContStart(history[histPtr]);
-  if (!content) {lcdoutput.drawchar('E', 30); delay(1000); return;}; //if dir empty, return
-  level++;
-  wdpath[level] = history[histPtr];   //save selected dir address
-  histPtr = 0;
-  history[0] = content;
 }*/
+void selectNextDir() {
+  if (!selectedFile.isDir()) return; //if not dir, return
+  File content = selectedFile.enterDir();
+  if (!content.isValid()) {lcdoutput.drawchar('E', 30); delay(1000); return;}; //if dir empty, return
+  selectedFile = content;
+  fileIndex = 0;
+}
 
 void loop() {
   switch (m16input.button()) {    //File Browser
@@ -99,7 +97,7 @@ void loop() {
       printCurrent();
     break;
     case 'D':
-      //selectNextDir();
+      selectNextDir();
       printCurrent();
     break;
     case '#':                //New file menu    
