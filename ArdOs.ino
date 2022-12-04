@@ -36,8 +36,7 @@ char buff2[16] = "";
 void setup() {  
   history[0] = caofilesys.getContStart(0);
   wdpath[1] = 0;
-
-  selectedFile.enterDir();
+  selectedFile = selectedFile.enterDir();
   lcdoutput.init();
   printCurrent();
 }
@@ -56,16 +55,18 @@ void printCurrent() {
   if (shadowFile.isDir()) lcdoutput.drawchar('>', 15);
   if (selectedFile.isDir()) lcdoutput.drawchar('>', 31);
 }
+/*
 void selectPrevFile() {
   if (histPtr) histPtr--;
-}
+}*/
 void selectNextFile() {
-  File next = selectedFile.nextFile();
+  File next = selectedFile.getNextFile();
   if (!next.isValid()) return;
   shadowFile = selectedFile;
   selectedFile = next;
   fileIndex++;
 }
+/*
 void selectPrevDir() {
   if (level <= 1) return;
   history[0] = caofilesys.getContStart(wdpath[level - 2]);
@@ -81,12 +82,12 @@ void selectNextDir() {
   wdpath[level] = history[histPtr];   //save selected dir address
   histPtr = 0;
   history[0] = content;
-}
+}*/
 
 void loop() {
   switch (m16input.button()) {    //File Browser
     case 'A':
-      selectPrevFile();
+      //selectPrevFile();
       printCurrent();
     break;
     case 'B':
@@ -94,11 +95,11 @@ void loop() {
       printCurrent();
     break;
     case 'C':
-      selectPrevDir();
+      //selectPrevDir();
       printCurrent();
     break;
     case 'D':
-      selectNextDir();
+      //selectNextDir();
       printCurrent();
     break;
     case '#':                //New file menu    

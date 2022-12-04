@@ -90,7 +90,7 @@ void File::getName(char *str) {  //input char[] and file address.
   return;
 }
 
-File File::nextFile() {  //return next file address if not at end of working directory
+File File::getNextFile() {  //return next file address if not at end of working directory
   int address = path[level]; 
   int nextaddr = address + getNameSize() + 3;    //address of redirect
   do {  //follow redirections until endoffile
@@ -100,9 +100,9 @@ File File::nextFile() {  //return next file address if not at end of working dir
   address += 2; //go to first byte after
   File parentDir = File(path[level - 1]); 
   if (address == parentDir.endDir()) return File(); //end of directory
-  File nextf = copyFile();
-  nextf.path[nextf.level] = address;
-  return nextf;
+  File nextFile = copyFile();
+  nextFile.path[nextFile.level] = address;
+  return nextFile;
 }
 
 //Only used by nextfile() to detect end of working directory, dir must not be empty
@@ -117,12 +117,12 @@ int File::endDir() {  //return end address of parent dir last block
   }
   return eobPtr;
 }
-
+/*
 int File::findAddr(char *fileName, int dirAddr) { //find memory address of a file in a given directory
                                             //return 0 if not found
   int address = dirAddr;
   address = skipHeader(address); //skip file header
-  address = getContStart(address); //get to content
+  //address = getContStart(address); //get to content
   if (!address) return 0; //if null, dir is empty
   while (readInt(address)) {  //TODO : remove readInt()
     char tempstr[16]; 
@@ -132,10 +132,10 @@ int File::findAddr(char *fileName, int dirAddr) { //find memory address of a fil
   }
   return 0; //end of dir
 }
-
-int File::getContStart(int address) { //skip header then follow redirections until content reached
+*/
+int File::getContStart() { //skip header then follow redirections until content reached
                                 //if end of file found before any content, return 0
-  int start = readInt(skipHeader(address)); //skip header then follow first redirection
+  int start = readInt(skipHeader(path[level])); //skip header then follow first redirection
   int end = readInt(start);
   while(1) { //while no null redirect :
     if (!(start && end)) return 0; //return 0 if end of file
@@ -170,7 +170,15 @@ void File::getParentString(char *output) {
   return;
 }
 
-void File::enterDir() {
-  path[level + 1] = getContStart(path[level]);
-  level++;
+File File::enterDir() {
+  int nextFile = getContStart();
+  if (nextFile) {
+    File copy = copyFile();
+    copy.level++;
+    copy.path[copy.level] = nextFile;
+    return copy;
+  } else {
+    File nullfile = File();
+    return nullfile;
+  }
 }
