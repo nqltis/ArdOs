@@ -22,7 +22,7 @@ LCDoutput lcdoutput(RS, RW, E, DataPin);
 CAOfilesys caofilesys;
 
 File selectedFile(0); //root
-File shadowFile(0); //empty File
+File shadowFile; //empty File
 
 int wdpath[16];   //working directory path (addresses)
 byte level = 1;   //active wdpath[] index
@@ -48,6 +48,8 @@ void printCurrent() {
     selectedFile.getName(buff2);
     lcdoutput.printScreen(buff1, buff2);
     if (selectedFile.isDir()) lcdoutput.drawchar('>', 31);
+    lcdoutput.drawchar('p', 30);
+    delay(1000);
     return;
   }
   shadowFile.getName(buff1);
@@ -55,15 +57,24 @@ void printCurrent() {
   lcdoutput.printScreen(buff1, buff2);
   if (shadowFile.isDir()) lcdoutput.drawchar('>', 15);
   if (selectedFile.isDir()) lcdoutput.drawchar('>', 31);
+  lcdoutput.drawchar('P', 30);
+  delay(1000);
 }
 void selectPrevFile() {
   if (histPtr) histPtr--;
 }
 void selectNextFile() {
-  int nextfile = caofilesys.nextFile(history[histPtr], wdpath[level]);
-  if (!nextfile) return;
-  history[histPtr + 1] = nextfile;
-  histPtr++;
+  lcdoutput.drawchar('n', 30);
+  delay(500);
+  File next = selectedFile.nextFile();
+  shadowFile = selectedFile;
+  selectedFile = next;
+  fileIndex++;
+  lcdoutput.drawchar('B', 30);
+  delay(1000);
+  //if (!nextfile) return;
+  //history[histPtr + 1] = nextfile;
+  //histPtr++;
 }
 void selectPrevDir() {
   if (level <= 1) return;

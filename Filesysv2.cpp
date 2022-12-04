@@ -48,6 +48,19 @@ File::File(FS_SIZE _address) {
   level = 0;
 }
 
+File::File() {
+  level = -127;
+}
+
+File File::copyFile() {
+  File copy;
+  for (char i = 0; i <= level; i++) {
+    copy.path[i] = path[i];
+  }
+  copy.level = level;
+  return copy;
+}
+
 int File::skipHeader(int address) {
   return address + (memory[address] & 127) + 3;
 }
@@ -57,13 +70,14 @@ int File::readInt(int address) {
 int File::isDir() {
   return memory[path[level]] & 128;
 }
-int File::getNameSize(int address) {
-  return memory[address] & 127;
+int File::getNameSize() {
+  return memory[path[level]] & 127;
 }
 
 //TODO: Remove this function by adapting library
 void File::getName(char *str, int address) {
-  int sizeOfName = getNameSize(address); //get rid of dir flag
+  //int sizeOfName = getNameSize(address); //get rid of dir flag
+  int sizeOfName = memory[path[level]] & 127;
   for (int i = 1; i <= sizeOfName; i++) {
     str[i - 1] = memory[address + i]; 
   }
@@ -73,7 +87,7 @@ void File::getName(char *str, int address) {
 
 void File::getName(char *str) {  //input char[] and file address. 
                                               //write in char[] name of file at address.
-  int sizeOfName = getNameSize(path[level]); //get rid of dir flag
+  int sizeOfName = getNameSize(); //get rid of dir flag
   for (int i = 1; i <= sizeOfName; i++) {
     str[i - 1] = memory[path[level] + i]; 
   }
@@ -81,22 +95,27 @@ void File::getName(char *str) {  //input char[] and file address.
   return;
 }
 
-int File::nextFile(int address, int parentDirAddr) {  //return next file address if not at end of working directory
-  int nsize = getNameSize(address); //get rid of dir flag 
-  int nextaddr = address + nsize + 3;    //address of redirect
+File File::nextFile() {  //return next file address if not at end of working directory
+  int address = path[level]; 
+  int nextaddr = address + getNameSize() + 3;    //address of redirect
   do {  //follow redirections until endoffile
     address = nextaddr; 
     nextaddr = readInt(nextaddr); //read address of endofblock
   } while (nextaddr);
-  address += 2; //go to first byte after 
-  if (address == endDir(parentDirAddr)) return 0; //end of directory
-  return (address);
+  address += 2; //go to first byte after
+  File parentDir = File(path[level - 1]); 
+  if (address == parentDir.endDir()) return File(); //end of directory
+  File nextf = copyFile();
+  nextf.path[nextf.level] = address;
+  return nextf;
 }
 
 //Only used by nextfile() to detect end of working directory, dir must not be empty
-int File::endDir(int address) {  //return end address of working dir last block
-  int nsize = getNameSize(address);        //get rid of dir flag 
-  int newHeaderPtr = readInt(address + nsize + 3);
+int File::endDir() {  //return end address of parent dir last block
+  //int nsize; = getNameSize(address);        //get rid of dir flag 
+  //int address = path[level];
+  //int nsize = getNameSize();
+  int newHeaderPtr = readInt(path[level] + getNameSize() + 3);
   int newHeaderVal = readInt(newHeaderPtr);
   int eobPtr;
   while (newHeaderVal) { //follow redirections until endofdir
@@ -117,7 +136,7 @@ int File::findAddr(char *fileName, int dirAddr) { //find memory address of a fil
     char tempstr[16]; 
     getName(tempstr, address); //read name
     if (strCompare(tempstr, fileName)) return address;
-    address = nextFile(address, dirAddr); //go to next file
+    //address = nextFile(address, dirAddr); //go to next file
   }
   return 0; //end of dir
 }
