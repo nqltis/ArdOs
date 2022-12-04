@@ -48,8 +48,6 @@ void printCurrent() {
     selectedFile.getName(buff2);
     lcdoutput.printScreen(buff1, buff2);
     if (selectedFile.isDir()) lcdoutput.drawchar('>', 31);
-    lcdoutput.drawchar('p', 30);
-    delay(1000);
     return;
   }
   shadowFile.getName(buff1);
@@ -57,22 +55,16 @@ void printCurrent() {
   lcdoutput.printScreen(buff1, buff2);
   if (shadowFile.isDir()) lcdoutput.drawchar('>', 15);
   if (selectedFile.isDir()) lcdoutput.drawchar('>', 31);
-  lcdoutput.drawchar('P', 30);
-  delay(1000);
 }
 void selectPrevFile() {
   if (histPtr) histPtr--;
 }
 void selectNextFile() {
-  lcdoutput.drawchar('n', 30);
-  delay(500);
   File next = selectedFile.nextFile();
   if (!next.isValid()) return;
   shadowFile = selectedFile;
   selectedFile = next;
   fileIndex++;
-  lcdoutput.drawchar('B', 30);
-  delay(500);
 }
 void selectPrevDir() {
   if (level <= 1) return;

@@ -34,14 +34,6 @@ static unsigned char memory[] = {
 };
 
 //{blg{}, LO.txt(), a.txt(hello), usr{a.lua(!#lua5.3), main.c(int main() {})}}
-/*
-File::File(FS_SIZE _address, File parentDir) {
-
-}
-
-File::File(char *path) {
-
-}*/
 
 File::File(FS_SIZE _address) {
   path[0] = _address;
@@ -115,9 +107,6 @@ File File::nextFile() {  //return next file address if not at end of working dir
 
 //Only used by nextfile() to detect end of working directory, dir must not be empty
 int File::endDir() {  //return end address of parent dir last block
-  //int nsize; = getNameSize(address);        //get rid of dir flag 
-  //int address = path[level];
-  //int nsize = getNameSize();
   int newHeaderPtr = readInt(path[level] + getNameSize() + 3);
   int newHeaderVal = readInt(newHeaderPtr);
   int eobPtr;
