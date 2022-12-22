@@ -33,7 +33,8 @@ void setup() {
 
 void printCurrent() {
   if (!fileIndex) {
-    selectedFile.getParentString(buff1);
+    File parent = selectedFile.getParentDir();
+    parent.getPathString(buff1);
     selectedFile.getName(buff2);
     lcdoutput.printScreen(buff1, buff2);
     if (selectedFile.isDir()) lcdoutput.drawchar('>', 31);
@@ -62,6 +63,7 @@ void selectPrevDir() {
   if (!parent.isValid()) return;
   selectedFile = selectedFile.getParentDir();
   fileIndex = 0;
+  selectPrevFile();
 }
 void selectNextDir() {
   if (!selectedFile.isDir()) return; //if not dir, return

@@ -68,7 +68,7 @@ int File::getNameSize() {
 int File::isValid() {
   if (level < 0) return 0; return 1;
 }
-
+/*
 //TODO: Remove this function by adapting library
 void File::getName(char *str, int address) {
   //int sizeOfName = getNameSize(address); //get rid of dir flag
@@ -78,7 +78,7 @@ void File::getName(char *str, int address) {
   }
   str[sizeOfName] = 0;
   return;
-}
+}*/
 
 void File::getName(char *str) {  //input char[] and file address. 
                                               //write in char[] name of file at address.
@@ -150,14 +150,15 @@ void File::getPathString(char *output) {
   output[0] = '/';
   output[1] = 0;
   for (int i = 1; i <= level; i++) {
+    File temp = File(path[i]);
     char tmp[32];
-    getName(tmp, path[i]);
+    temp.getName(tmp);
     strConcat(output, tmp);
     strConcat(output, "/");
   }
   return;
 }
-
+/*
 void File::getParentString(char *output) {
   output[0] = '/';
   output[1] = 0;
@@ -168,7 +169,7 @@ void File::getParentString(char *output) {
     strConcat(output, "/");
   }
   return;
-}
+}*/
 
 File File::getParentDir() {
   if (level <= 0) return File();
