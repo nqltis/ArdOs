@@ -18,6 +18,6 @@ class ProgExec
     char currentCommand[4];
     char commandIndex;
     char acc;
-}
+};
 
 #endif

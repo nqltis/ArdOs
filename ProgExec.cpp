@@ -7,7 +7,7 @@
 #include "ProgExec.h"
 
 ProgExec::ProgExec() {
-  for (char i = 0, i < 4, i++) {
+  for (char i = 0; i < 4; i++) {
     currentCommand[i] = 0;
   }
   commandIndex = 0;
