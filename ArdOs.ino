@@ -128,7 +128,22 @@ void loop() {
       delay(2000);
       printCurrent();
       break;
-    }
+    } break;
+    case '*':{ //Execute file
+      
+
+/*
+    case -1: //ext
+      return -1; //end of program
+    break;
+    case -2: //slp I/R I/R
+      commandLen = 2; //waiting for two more arguments
+    break;
+    case -3: //pch I/R I/R
+      commandLen = 2;
+    break;
+*/
+    } break;
   }
   delay(10);
 }
