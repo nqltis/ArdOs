@@ -80,6 +80,9 @@ File File::copyFile() {
     copy.path[i] = path[i];
   }
   copy.level = level;
+  copy.startOfBlock = startOfBlock;
+  copy.endOfBlock = endOfBlock;
+  copy.currentAddress = currentAddress;
   return copy;
 }
 
