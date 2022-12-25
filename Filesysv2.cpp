@@ -13,7 +13,15 @@
 
 #define LD 1
 #define ST 2
+#define AND 3
+#define OR 4
+#define NOT 5
+#define XOR 6
 #define ADD 7
+#define SUB 8
+#define MUL 9
+#define DIV 10
+#define MOD 11
 #define ext 255
 #define slp 254
 #define pch 253

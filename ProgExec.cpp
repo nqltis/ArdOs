@@ -67,8 +67,32 @@ char ProgExec::execute(char command) {
     case 2:   //ST
       progmem[getArg(0, 1)] = acc;
     break;
+    case 3:   //AND
+      acc &= getArg(0, 1);
+    break;
+    case 4:   //OR
+      acc |= getArg(0, 1);
+    break;
+    case 5:   //NOT
+      acc = ~acc;
+    break;
+    case 6:   //XOR
+      acc ^= getArg(0, 1);
+    break;
     case 7:   //ADD
       acc += getArg(0, 1);
+    break;
+    case 8:   //SUB
+      acc -= getArg(0, 1);
+    break;
+    case 9:   //MUL
+      acc *= getArg(0, 1);
+    break;
+    case 10:  //DIV
+      acc /= getArg(0, 1);
+    break;
+    case 11:  //MOD
+      acc %= getArg(0, 1);
     break;
     default:
       if (arg[0] < 0) { //syscall
