@@ -8,19 +8,27 @@
 
 ProgExec::ProgExec() {
   for (char i = 0; i < 4; i++) {
-    currentCommand[i] = 0;
+    arg[i] = 0;
   }
-  commandIndex = 0;
+  argIndex = 0;
   commandLen = 0;
   acc = 0;
 }
 
 char ProgExec::getCommand() {
-  return currentCommand[0];
+  return arg[0];
+}
+
+int ProgExec::getArg(char offset, unsigned char size) { //get argument of specified size and offset in bytes
+  int _ans = 0;
+  for(char i = offset + 1; i < offset + size + 1; i++) {
+    _ans = (_ans << 8) | arg[i];
+  }
+  return _ans;
 }
 
 char ProgExec::execute(char command) {
-  if (!commandIndex) {  //initialization of new commands
+  if (!argIndex) {  //initialization of new commands
     switch (command) {
       case -1: //ext
         commandLen = 0;
@@ -33,15 +41,19 @@ char ProgExec::execute(char command) {
       break;
     }
   } 
-  currentCommand[commandIndex++] = command;
-  if (commandIndex <= commandLen) { //command incomplete
+  arg[argIndex++] = command;
+  if (argIndex <= commandLen) { //command incomplete
     return 0; //Ask for more arguments
   }
-  switch (currentCommand[0]) {  //command execution
+  switch (arg[0]) {  //command execution
     default:
-      if (currentCommand[0] < 0) return currentCommand[0];  //return syscall
+      if (arg[0] < 0) {
+        argIndex = 0;
+        commandLen = 0;
+        return arg[0];  //return syscall
+      }  
   }
-  commandIndex = 0;
+  argIndex = 0;
   commandLen = 0;
   return 1;
 }

@@ -13,13 +13,12 @@ class ProgExec
     ProgExec();
     char execute(char command);
     char getCommand();
-    int getArg1();
-    int getArg2();
+    int getArg(char offset, unsigned char size);
     //char stack; //used by both main and lib to communicate syscalls
   private:
     unsigned char progmem[128];
-    char currentCommand[4];
-    char commandIndex;
+    char arg[4];
+    char argIndex;
     char commandLen;
     char acc;
 };

@@ -4,6 +4,7 @@
 #include "Filesysv2.h"
 #include "ustrlib.h"
 #include "T9typelib.h"
+#include "ProgExec.h"
 
 const byte InputPin[8] = {
   0, 1, A5, A4, A3, A2, A1, A0
@@ -91,6 +92,8 @@ void loop() {
       selectNextDir();
       printCurrent();
     break;
+
+
     case '#':                //New file menu    
     {
       delay(10);
@@ -129,21 +132,61 @@ void loop() {
       printCurrent();
       break;
     } break;
-    case '*':{ //Execute file
-      
 
-/*
-    case -1: //ext
-      return -1; //end of program
-    break;
-    case -2: //slp I/R I/R
-      commandLen = 2; //waiting for two more arguments
-    break;
-    case -3: //pch I/R I/R
-      commandLen = 2;
-    break;
-*/
+
+    case '*':{ //Execute file
+      selectedFile.open();
+      ProgExec thread;
+      char running = 1;
+      while(selectedFile.dataRemaining() && running) {
+        char progbyte = selectedFile.readData();
+        char callcode = thread.execute(progbyte);
+        char text[4];
+        toString(text, progbyte);
+        lcdoutput.drawchar(text[0], 28);
+        lcdoutput.drawchar(text[1], 29);
+        lcdoutput.drawchar(text[2], 30);
+        lcdoutput.drawchar(text[3], 31);
+        toString(text, callcode);
+        lcdoutput.drawchar(text[0], 12);
+        lcdoutput.drawchar(text[1], 13);
+        lcdoutput.drawchar(text[2], 14);
+        lcdoutput.drawchar(text[3], 15);
+        lcdoutput.drawchar(running + 48, 9);
+        delay(1000);
+        if (callcode < 0) { //handle syscall
+          switch (callcode) {
+            case -1: //ext
+              running = 0; //end of program
+            break;
+            case -2: //slp I/R I/R
+              delay(thread.getArg(0, 2)); //waiting for two more arguments
+            break;
+            case -3: //pch I/R I/R
+              lcdoutput.drawchar(thread.getArg(0, 1), thread.getArg(1, 1));
+            break;
+          }
+        }
+      }
+    printCurrent();
     } break;
+
+
   }
   delay(10);
+}
+
+
+void toString(char *output, char num) {
+  if (num < 0) {
+    output[0] = '-';
+    num *= -1;
+  } else {
+    output[0] = ' ';
+  }
+  output[1] = (num / 100) + 48;
+  num %= 100;
+  output[2] = (num / 10) + 48;
+  num %= 10;
+  output[3] = num + 48;
 }

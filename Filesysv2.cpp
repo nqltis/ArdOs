@@ -150,6 +150,19 @@ int File::getContStart() { //skip header then follow redirections until content 
   return 0; //is never reached
 }
 
+FS_SIZE File::followRedirect(FS_SIZE _initAddr) { //skip header then follow redirections until content reached
+                                //if end of file found before any content, return 0
+  int start = readInt(_initAddr); //skip header then follow first redirection
+  int end = readInt(start);
+  while(1) { //while no null redirect :
+    if (!(start && end)) return 0; //return 0 if end of file
+    if ((start + 2) != end) return (start + 2); //return address if block not empty
+    start = readInt(end);
+    end = readInt(start); 
+  }
+  return 0; //is never reached
+}
+
 void File::getPathString(char *output) {
   output[0] = '/';
   output[1] = 0;
@@ -196,4 +209,25 @@ File File::enterDir() {
     File nullfile = File();
     return nullfile;
   }
+}
+
+char File::open() {
+  startOfBlock = getContStart();
+  endOfBlock = readInt(startOfBlock);
+  currentAddress = startOfBlock;
+  if (startOfBlock) return 1; //success
+  return 0; //empty file
+}
+
+char File::dataRemaining() {
+  return startOfBlock;
+}
+
+unsigned char File::readData() {
+  if (currentAddress == endOfBlock) {
+    startOfBlock = followRedirect(startOfBlock);
+    endOfBlock = readInt(startOfBlock);
+    currentAddress = startOfBlock + 2;
+  }
+  return memory[currentAddress++];
 }

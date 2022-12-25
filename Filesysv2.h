@@ -29,10 +29,17 @@ class File
     File getParentDir();
     File enterDir();
     File copyFile();
+    char open();
+    char dataRemaining();
+    unsigned char readData();
   private:
     FS_SIZE path[FS_DEPTH];
     char level;
+    FS_SIZE startOfBlock;
+    FS_SIZE endOfBlock;
+    FS_SIZE currentAddress;
     int getContStart(); //follow redirections until content reached
+    FS_SIZE followRedirect(FS_SIZE _initAddr); //getContStart without header skipping
     //int findAddr(char *fileName, int dirAddr);
     int skipHeader(int address);
     int readInt(int address);
