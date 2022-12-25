@@ -11,6 +11,12 @@
 #define fsz 0 //dummy for futur implementation of file size
 #define empt 0 //dummy for empty mem
 
+#define LD 1
+#define ST 2
+#define ADD 7
+#define ext 255
+#define slp 254
+#define pch 253
 
 static unsigned char memory[] = {
   129, '/', fsz, fsz, 0, 6, 0, 50,            //0   /{
@@ -32,16 +38,24 @@ static unsigned char memory[] = {
   '}', 0, 137, empt, empt, 0, 135, empt,      //120
   empt, 0, 133, empt, empt, 0, 196, 0,        //128
   192, 0, 0, 3, 'e', 'x', 'e', fsz,           //136
-  fsz, 0, 147, 0, 188, 253, 72, 0,            //144
-  253, 101, 1, 253, 108, 2, 253, 108,         //152
-  3, 253, 111, 4, 253, 87, 16, 253,           //160
-  111, 17, 253, 114, 18, 253, 108, 19,        //168
-  253, 100, 20, 253, 32, 5, empt, empt, //176
-  254, 20, 0, 255, 0, 190, 0, 0,           //184
+  fsz, 0, 147, 0, 188, LD, 1, ST,            //144
+  32, LD, 'A', ST, 0, ADD, 1, ST,         //152
+  1, ADD, 1, ST, 2, ADD, 1, ST,           //160
+  3, pch, 128, 0, pch, 129, 1, pch,        //168
+  130, 2, pch, 131, 3, empt, empt, empt, //176
+  slp, 20, 0, ext, 0, 190, 0, 0,           //184
   0, 194, 0, 0, 0, 198, 0, 0                      //192
 };
-
-//{blg{}, LO.txt(), a.txt(hello), usr{a.lua(!#lua5.3), main.c(int main() {})}}
+/* empty exe file
+  fsz, 0, 147, 0, 188, empt, empt, empt,            //144
+  empt, empt, empt, empt, empt, empt, empt, empt,         //152
+  empt, empt, empt, empt, empt, empt, empt, empt,           //160
+  empt, empt, empt, empt, empt, empt, empt, empt,        //168
+  empt, empt, empt, empt, empt, empt, empt, empt, //176
+  empt, empt, empt, empt, 0, 190, 0, 0,           //184
+  0, 194, 0, 0, 0, 198, 0, 0                      //192
+*/
+//{blg{}, LO.txt(), a.txt(hello), usr{a.lua(!#lua5.3), main.c(int main() {}), exe}}
 
 File::File(FS_SIZE _address) {
   path[0] = _address;
