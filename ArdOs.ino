@@ -143,6 +143,7 @@ void loop() {
         char progbyte = selectedFile.readData();
         char callcode = thread.execute(progbyte);
         char text[4];
+        /* debug 
         toString(text, progbyte);
         lcdoutput.drawchar(text[0], 28);
         lcdoutput.drawchar(text[1], 29);
@@ -153,7 +154,8 @@ void loop() {
         lcdoutput.drawchar(text[1], 13);
         lcdoutput.drawchar(text[2], 14);
         lcdoutput.drawchar(text[3], 15);
-        delay(200);
+        delay(100);
+        // */
         if (callcode < 0) { //handle syscall
           switch (callcode) {
             case -1:  //ext
@@ -165,13 +167,13 @@ void loop() {
             case -3:  //pch I/R I/R
               lcdoutput.drawchar(thread.getArg(0, 1), thread.getArg(1, 1));
             break;
-            case -4:
-              unsigned char size = thread.getArg(1, 1);
+            case -4:{
+              char size = thread.getArg(1, 1);
               char line[16];
               thread.getProgMem(line, thread.getArg(0, 1), size);
               line[size] = 0;
               lcdoutput.printScreen("", line);
-            break;
+            break;}
             case -64: //set loop start
               exeCopy = selectedFile.copyFile();
             break;
