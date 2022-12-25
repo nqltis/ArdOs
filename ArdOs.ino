@@ -168,6 +168,7 @@ void loop() {
               unsigned char size = thread.getArg(1, 1);
               char line[16];
               thread.getProgMem(line, thread.getArg(0, 1), size);
+              line[size] = 0;
               lcdoutput.printScreen("", line);
             break;
           }

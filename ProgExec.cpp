@@ -48,9 +48,33 @@ char ProgExec::execute(char command) {
       case 2:   //ST
         commandLen = 1;
       break; 
+      case 3:   //AND
+        commandLen = 1;
+      break; 
+      case 4:   //OR
+        commandLen = 1;
+      break; 
+      case 5:   //NOT
+        commandLen = 0;
+      break; 
+      case 6:   //XOR
+        commandLen = 1;
+      break; 
       case 7:   //ADD
         commandLen = 1;
       break;
+      case 8:   //SUB
+        commandLen = 1;
+      break; 
+      case 9:   //MUL
+        commandLen = 1;
+      break; 
+      case 10:  //DIV
+        commandLen = 1;
+      break; 
+      case 11:  //MOD
+        commandLen = 1;
+      break; 
       case -1:  //ext
         commandLen = 0;
       break;
