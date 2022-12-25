@@ -33,6 +33,12 @@ int ProgExec::getArg(char offset, unsigned char size) { //get argument of specif
   return _ans;
 }
 
+void ProgExec::getProgMem(char *output, unsigned char offset, unsigned char size) {
+  for(unsigned char i = 0; i < size; i++) {
+    output[i] = progmem[i + offset];
+  }
+}
+
 char ProgExec::execute(char command) {
   if (!argIndex) {  //initialization of new commands
     switch (command) {
@@ -52,6 +58,9 @@ char ProgExec::execute(char command) {
         commandLen = 2; //waiting for two more arguments
       break;
       case -3:  //pch I/R I/R
+        commandLen = 2;
+      break;
+      case -4:  //pst I/R I/R
         commandLen = 2;
       break;
     }

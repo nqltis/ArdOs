@@ -164,6 +164,12 @@ void loop() {
             case -3: //pch I/R I/R
               lcdoutput.drawchar(thread.getArg(0, 1), thread.getArg(1, 1));
             break;
+            case -4:
+              unsigned char size = thread.getArg(1, 1);
+              char line[16];
+              thread.getProgMem(line, thread.getArg(0, 1), size);
+              lcdoutput.printScreen("", line);
+            break;
           }
         }
       }

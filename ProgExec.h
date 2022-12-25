@@ -14,7 +14,7 @@ class ProgExec
     char execute(char command);
     char getCommand();
     int getArg(char offset, unsigned char size);
-    //char stack; //used by both main and lib to communicate syscalls
+    void getProgMem(char *output, unsigned char offset, unsigned char size);
   private:
     char progmem[128];
     char arg[4];

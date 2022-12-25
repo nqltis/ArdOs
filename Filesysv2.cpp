@@ -25,6 +25,7 @@
 #define ext 255
 #define slp 254
 #define pch 253
+#define pst 252
 
 static unsigned char memory[] = {
   129, '/', fsz, fsz, 0, 6, 0, 50,            //0   /{
@@ -50,7 +51,7 @@ static unsigned char memory[] = {
   32, LD, 'A', ST, 0, ADD, 1, ST,         //152
   1, ADD, 1, ST, 2, ADD, 1, ST,           //160
   3, pch, 128, 0, pch, 129, 1, pch,        //168
-  130, 2, pch, 131, 3, empt, empt, empt, //176
+  130, 2, pch, 131, 3, pst, 0, 4, //176
   slp, 20, 0, ext, 0, 190, 0, 0,           //184
   0, 194, 0, 0, 0, 198, 0, 0                      //192
 };
