@@ -35,7 +35,6 @@ static unsigned char memory[] = {
   'a', '.', 't', 'x', 't', fsz, fsz, 0,       //32  a.txt
   41, 0, 48, 'h', 'e', 'l', 'l', 'o',         //40  (hello
   0, 57, 0, 55, empt, empt, empt, 0,          //48
-
   129, 0, 0, 131, 'u', 's', 'r', fsz,         //56  
   fsz, 0, 69, empt, empt, 0, 125, 5,          //64
   'm', 'y', 'l', 'u', 'a', fsz, fsz, 0,       //72
@@ -99,17 +98,6 @@ int File::getNameSize() {
 int File::isValid() {
   if (level < 0) return 0; return 1;
 }
-/*
-//TODO: Remove this function by adapting library
-void File::getName(char *str, int address) {
-  //int sizeOfName = getNameSize(address); //get rid of dir flag
-  int sizeOfName = memory[path[level]] & 127;
-  for (int i = 1; i <= sizeOfName; i++) {
-    str[i - 1] = memory[address + i]; 
-  }
-  str[sizeOfName] = 0;
-  return;
-}*/
 
 void File::getName(char *str) {  //input char[] and file address. 
                                               //write in char[] name of file at address.
@@ -148,22 +136,7 @@ int File::endDir() {  //return end address of parent dir last block
   }
   return eobPtr;
 }
-/*
-int File::findAddr(char *fileName, int dirAddr) { //find memory address of a file in a given directory
-                                            //return 0 if not found
-  int address = dirAddr;
-  address = skipHeader(address); //skip file header
-  //address = getContStart(address); //get to content
-  if (!address) return 0; //if null, dir is empty
-  while (readInt(address)) {  //TODO : remove readInt()
-    char tempstr[16]; 
-    getName(tempstr, address); //read name
-    if (strCompare(tempstr, fileName)) return address;
-    //address = nextFile(address, dirAddr); //go to next file
-  }
-  return 0; //end of dir
-}
-*/
+
 int File::getContStart() { //skip header then follow redirections until content reached
                                 //if end of file found before any content, return 0
   int start = readInt(skipHeader(path[level])); //skip header then follow first redirection
@@ -202,18 +175,6 @@ void File::getPathString(char *output) {
   }
   return;
 }
-/*
-void File::getParentString(char *output) {
-  output[0] = '/';
-  output[1] = 0;
-  for (int i = 1; i < level; i++) {
-    char tmp[32];
-    getName(tmp, path[i]);
-    strConcat(output, tmp);
-    strConcat(output, "/");
-  }
-  return;
-}*/
 
 File File::getParentDir() {
   if (level <= 0) return File();
