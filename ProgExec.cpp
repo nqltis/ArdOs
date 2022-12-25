@@ -43,6 +43,9 @@ void ProgExec::getProgMem(char *output, unsigned char offset, unsigned char size
 char ProgExec::execute(char command) {
   if (!argIndex) {  //initialization of new commands
     switch (command) {
+      case 0:   //NOP
+        commandLen = 0;
+      break;
       case 1:   //LD
         commandLen = 1;
       break;
