@@ -21,6 +21,7 @@ class ProgExec
     char argIndex;
     char commandLen;
     char acc;
+    char cond;
 };
 
 #endif
