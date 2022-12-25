@@ -97,6 +97,12 @@ char ProgExec::execute(char command) {
       case -4:  //pst I/R I/R
         commandLen = 2;
       break;
+      case -64: //set loop start
+        commandLen = 0;
+      break;
+      case -63: //loop
+        commandLen = 0;
+      break;
     }
   } 
   arg[argIndex++] = command;

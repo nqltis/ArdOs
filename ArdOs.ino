@@ -137,6 +137,7 @@ void loop() {
     case '*':{ //Execute file
       selectedFile.open();
       ProgExec thread;
+      File exeCopy; //Used for loops
       char running = 1;
       while(selectedFile.dataRemaining() && running) {
         char progbyte = selectedFile.readData();
@@ -155,13 +156,13 @@ void loop() {
         delay(200);
         if (callcode < 0) { //handle syscall
           switch (callcode) {
-            case -1: //ext
+            case -1:  //ext
               running = 0; //end of program
             break;
-            case -2: //slp I/R I/R
+            case -2:  //slp I/R I/R
               delay(thread.getArg(0, 2)); //waiting for two more arguments
             break;
-            case -3: //pch I/R I/R
+            case -3:  //pch I/R I/R
               lcdoutput.drawchar(thread.getArg(0, 1), thread.getArg(1, 1));
             break;
             case -4:
@@ -170,6 +171,12 @@ void loop() {
               thread.getProgMem(line, thread.getArg(0, 1), size);
               line[size] = 0;
               lcdoutput.printScreen("", line);
+            break;
+            case -64: //set loop start
+              exeCopy = selectedFile.copyFile();
+            break;
+            case -63: //loop
+              selectedFile = exeCopy;
             break;
           }
         }
