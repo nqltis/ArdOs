@@ -22,6 +22,8 @@
 #define MUL 9
 #define DIV 10
 #define MOD 11
+#define lpst 192
+#define jmp 193
 #define ext 255
 #define slp 254
 #define pch 253
@@ -46,12 +48,12 @@ static unsigned char memory[] = {
   '}', 0, 137, empt, empt, 0, 135, empt,      //120
   empt, 0, 133, empt, empt, 0, 196, 0,        //128
   192, 0, 0, 3, 'e', 'x', 'e', fsz,           //136
-  fsz, 0, 147, 0, 188, LD, 1, ST,            //144
-  32, LD, 'A', ST, 0, ADD, 1, ST,         //152
-  1, ADD, 1, ST, 2, ADD, 1, ST,           //160
-  3, pch, 128, 0, pch, 129, 1, pch,        //168
-  130, 2, pch, 131, 3, pst, 0, 4, //176
-  slp, 20, 0, ext, 0, 190, 0, 0,           //184
+  fsz, 0, 147, 0, 188, LD, 'A', ST,            //144
+  20, LD, 0, ST, 21, lpst, pch, 148,         //152
+  149, LD, 148, ADD, 1, ST, 20, LD,           //160
+  149, ADD, 1, ST, 21, slp, 0, 127,        //168
+  jmp, ext, empt, empt, empt, empt, empt, empt, //176
+  empt, empt, empt, empt, 0, 190, 0, 0,           //184
   0, 194, 0, 0, 0, 198, 0, 0                      //192
 };
 /* empty exe file
