@@ -152,8 +152,7 @@ void loop() {
         lcdoutput.drawchar(text[1], 13);
         lcdoutput.drawchar(text[2], 14);
         lcdoutput.drawchar(text[3], 15);
-        lcdoutput.drawchar(running + 48, 9);
-        delay(1000);
+        delay(200);
         if (callcode < 0) { //handle syscall
           switch (callcode) {
             case -1: //ext
