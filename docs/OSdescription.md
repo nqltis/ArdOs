@@ -33,10 +33,10 @@ I : Integer
 
 |Code |Keyword | Description |
 |-----|--------|-------------|
-|`3`  |`AND`| Perform an AND operation with `acc`
-|`4`  |`OR` | Perform an OR operation with `acc`
-|`5`  |`NOT`| Perform a NOT operation with `acc`
-|`6`  |`XOR`| Perform an XOR operation with `acc`
+|`3`  |`AND I/R`| Perform a bitwise AND operation with `acc`
+|`4`  |`OR I/R` | Perform a bitwise OR operation with `acc`
+|`5`  |`NOT`| Perform a bitwise NOT operation on `acc`
+|`6`  |`XOR I/R`| Perform a bitwise XOR operation with `acc`
 
 #### Arithmetic Instructions
 
@@ -52,17 +52,19 @@ I : Integer
 
 |Code |Keyword | Description |
 |-----|--------|-------------|
-|`12` |`GT I/R`| Test if `acc` is greater than `I/R`
-|`13` |`EQ I/R`| Test if `acc` is equal to `I/R`
+|`12` |`EQ I/R`| Test if `acc` is equal to `I/R`
+|`13` |`GT I/R`| Test if `acc` is greater than `I/R`
 |`14` |`LT I/R`| Test if `acc` is lesser than `I/R`
+|`15` |`GE I/R`| Test if `acc` is greater than or equal to `I/R`
+|`16` |`LE I/R`| Test if `acc` is lesser than or equal to `I/R`
 
 #### Jump Instructions
 
 |Code |Keyword | Description |
 |-----|--------|-------------|
-|`15` |`JMP L` | Jump to label `L`
-|`16` |`JMPC L`| Jump if test is `TRUE` 
-|`17` |`JMPNC L`| Jump if test is `FALSE`
+|`17` |`JMP I/R` | Ignore a specified number of instructions
+|`18` |`JMPC I/R`| Jump if test is `TRUE` 
+|`19` |`JMPNC I/R`| Jump if test is `FALSE`
 
 ### System calls :
 
