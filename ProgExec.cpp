@@ -94,6 +94,9 @@ char ProgExec::execute(char command) {
       case 16:  //LE
         commandLen = 1;
       break;
+      case 17:  //JMP
+        commandLen = 1;
+      break;
       case -1:  //ext
         commandLen = 0;
       break;
@@ -114,7 +117,8 @@ char ProgExec::execute(char command) {
       break;
     }
   } 
-  arg[argIndex++] = command;
+  if (arg[0] != 127) arg[argIndex] = command; //Load byte unless if jumping (because argIndex can exceed arg size);
+  argIndex++;
   if (argIndex <= commandLen) { //command incomplete
     return 0; //Ask for more arguments
   }
@@ -167,12 +171,22 @@ char ProgExec::execute(char command) {
     case 16:  //LE
       cond = (acc <= getArg(0, 1));
     break;
+    case 17:  //JMP
+      arg[0] = 127; //Create an idle instruction
+      argIndex = 1;
+      commandLen = getArg(0, 1);  //Wait for as many args as requested jumps
+      return 0; //Ask for more arguments (which will not be read)
+    break;
+    case 127: //end of JMP
+      arg[0] = 0; //reset arg[0] to allow instruction loading again
+    break;
     default:
       if (arg[0] < 0) { //syscall
         argIndex = 0;
         commandLen = 0;
         return arg[0];  //return syscall
-      }  
+      }
+    break;
   }
   argIndex = 0;
   commandLen = 0;
