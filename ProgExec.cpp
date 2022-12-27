@@ -97,6 +97,12 @@ char ProgExec::execute(char command) {
       case 17:  //JMP
         commandLen = 1;
       break;
+      case 18:  //JMPC
+        commandLen = 1;
+      break;
+      case 19:  //JMPNC
+        commandLen = 1;
+      break;
       case -1:  //ext
         commandLen = 0;
       break;
@@ -176,6 +182,22 @@ char ProgExec::execute(char command) {
       argIndex = 1;
       commandLen = getArg(0, 1);  //Wait for as many args as requested jumps
       return 0; //Ask for more arguments (which will not be read)
+    break;
+    case 18:  //JMPC
+      if (cond) {
+        arg[0] = 127; //Create an idle instruction
+        argIndex = 1;
+        commandLen = getArg(0, 1);  //Wait for as many args as requested jumps
+        return 0; //Ask for more arguments (which will not be read)
+      }
+    break;
+    case 19:  //JMPNC
+      if (!cond) {
+        arg[0] = 127; //Create an idle instruction
+        argIndex = 1;
+        commandLen = getArg(0, 1);  //Wait for as many args as requested jumps
+        return 0; //Ask for more arguments (which will not be read)
+      }
     break;
     case 127: //end of JMP
       arg[0] = 0; //reset arg[0] to allow instruction loading again
