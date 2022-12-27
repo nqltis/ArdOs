@@ -11,6 +11,7 @@
 #define fsz 0 //dummy for futur implementation of file size
 #define empt 0 //dummy for empty mem
 
+#define NOP 0
 #define LD 1
 #define ST 2
 #define AND 3
@@ -27,6 +28,7 @@
 #define LT 14
 #define GE 15
 #define LE 16
+#define JMP 17
 #define lpst 192
 #define jmp 193
 #define ext 255
@@ -55,10 +57,10 @@ static const unsigned char memory[] = {
   192, 0, 0, 3, 'e', 'x', 'e', fsz,           //136
   fsz, 0, 147, 0, 188, LD, 'A', ST,            //144
   20, LD, 0, ST, 21, lpst, pch, 148,         //152
-  149, LD, 148, ADD, 1, ST, 20, LD,           //160
-  149, ADD, 1, ST, 21, slp, 0, 127,        //168
-  jmp, ext, empt, empt, empt, empt, empt, empt, //176
-  empt, empt, empt, empt, 0, 190, 0, 0,           //184
+  149, LD, 148, ADD, 1, ST, 20, JMP,           //160
+  6, LD, 149, ADD, 1, ST, 21, slp,        //168
+  1, 0, jmp, ext, empt, empt, empt, empt,  //176
+  empt, empt, empt, ext, 0, 190, 0, 0,           //184
   0, 194, 0, 0, 0, 198, 0, 0                      //192
 };
 /* empty exe file
