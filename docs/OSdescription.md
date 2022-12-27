@@ -62,7 +62,7 @@ I : Integer
 
 |Code |Keyword | Description |
 |-----|--------|-------------|
-|`17` |`JMP I/R` | Ignore a specified number of instructions
+|`17` |`JMP I/R` | Ignore a specified number of bytes
 |`18` |`JMPC I/R`| Jump if test is `TRUE` 
 |`19` |`JMPNC I/R`| Jump if test is `FALSE`
 
