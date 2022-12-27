@@ -22,6 +22,11 @@
 #define MUL 9
 #define DIV 10
 #define MOD 11
+#define EQ 12
+#define GT 13
+#define LT 14
+#define GE 15
+#define LE 16
 #define lpst 192
 #define jmp 193
 #define ext 255
@@ -29,7 +34,7 @@
 #define pch 253
 #define pst 252
 
-static unsigned char memory[] = {
+static const unsigned char memory[] = {
   129, '/', fsz, fsz, 0, 6, 0, 50,            //0   /{
   131, 'b', 'l', 'g', fsz, fsz, 0, 16,        //8   blg(
   0, 0, 6, 'L', 'O', '.', 't', 'x',           //16  ), syste

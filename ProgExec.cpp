@@ -79,13 +79,19 @@ char ProgExec::execute(char command) {
       case 11:  //MOD
         commandLen = 1;
       break; 
-      case 12:  //GT
+      case 12:  //EQ
         commandLen = 1;
       break; 
-      case 13:  //EQ
+      case 13:  //GT
         commandLen = 1;
       break; 
       case 14:  //LT
+        commandLen = 1;
+      break;
+      case 15:  //GE
+        commandLen = 1;
+      break;
+      case 16:  //LE
         commandLen = 1;
       break;
       case -1:  //ext
@@ -146,14 +152,20 @@ char ProgExec::execute(char command) {
     case 11:  //MOD
       acc %= getArg(0, 1);
     break;
-    case 12:  //GT
+    case 12:  //EQ
+      cond = (acc == getArg(0, 1));
+    break;
+    case 13:  //GT
       cond = (acc > getArg(0, 1));
     break;
-    case 13:  //MOD
-      cond = (acc = getArg(0, 1));
-    break;
-    case 14:  //MOD
+    case 14:  //LT
       cond = (acc < getArg(0, 1));
+    break;
+    case 15:  //GE
+      cond = (acc >= getArg(0, 1));
+    break;
+    case 16:  //LE
+      cond = (acc <= getArg(0, 1));
     break;
     default:
       if (arg[0] < 0) { //syscall
