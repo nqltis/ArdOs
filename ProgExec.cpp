@@ -26,10 +26,11 @@ int ProgExec::getArg(char offset, unsigned char size) { //get argument of specif
     char _arg;
     if (arg[i] & 128) {
       _arg = progmem[arg[i] & 127];
+      _ans = (_ans << 8) | _arg;
     } else {
       _arg = arg[i];
+      _ans = (_ans << 7) | _arg;
     }
-    _ans = (_ans << 8) | _arg;
   }
   return _ans;
 }
