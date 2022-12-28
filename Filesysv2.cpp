@@ -35,6 +35,9 @@
 #define jmp 193
 #define ext 255
 #define slp 254
+#define lab 253
+#define jmp 252
+#define ldm 251
 #define pch 250
 #define pst 249
 
@@ -58,11 +61,11 @@ static const unsigned char memory[] = {
   empt, 0, 133, empt, empt, 0, 196, 0,        //128
   192, 0, 0, 3, 'e', 'x', 'e', fsz,           //136
   fsz, 0, 147, 0, 188, LD, 'A', ST,            //144
-  20, LD, 0, ST, 21, lpst, pch, 148,         //152
-  149, LD, 148, ADD, 1, ST, 20, NOP,           //160
+  20, LD, 0, ST, 21, lab, 0, pch,         //152
+   148, 149, LD, 148, ADD, 1, ST, 20,           //160
   NOP, LD, 149, ADD, 1, ST, 21, slp,        //168
-  0, 127, GE, 16, JMPC, 1, jmp, slp,  //176
-  2, 0, NOP, ext, 0, 190, 0, 0,           //184
+  0, 127, GE, 16, JMPC, 2, jmp, 0,       //176
+  slp, 2, 0, ext, 0, 190, 0, 0,           //184
   0, 194, 0, 0, 0, 198, 0, 0                      //192
 };
 /* empty exe file
@@ -221,7 +224,7 @@ char File::open() {
   return 0; //empty file
 }
 
-char File::dataRemaining() {
+char File::dataRemaining() {  //TODO: Fix
   return startOfBlock;
 }
 

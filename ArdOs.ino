@@ -135,15 +135,15 @@ void loop() {
 
 
     case '*':{ //Execute file
-      selectedFile.open();
+      selectedFile.open(); //TODO: Handle empty file & 'executable' flag
       ProgExec thread;
-      File exeCopy; //Used for loops
+      File exeCopy; //Used for loops TODO: Remove
       char running = 1;
       while(selectedFile.dataRemaining() && running) {
         char progbyte = selectedFile.readData();
         char callcode = thread.execute(progbyte);
         char text[4];
-        /* debug 
+        /* debug
         toString(text, progbyte);
         lcdoutput.drawchar(text[0], 28);
         lcdoutput.drawchar(text[1], 29);
@@ -154,7 +154,7 @@ void loop() {
         lcdoutput.drawchar(text[1], 13);
         lcdoutput.drawchar(text[2], 14);
         lcdoutput.drawchar(text[3], 15);
-        delay(100);
+        delay(600);
         // */
         if (callcode < 0) { //handle syscall
           switch (callcode) {
@@ -164,6 +164,17 @@ void loop() {
             case -2:  //slp I/R I/R
               delay(thread.getArg(0, 2)); //waiting for two more arguments
             break;
+            case -3: break; //lab I (no action on reading)
+            case -4:{  //jmp I
+              selectedFile.open(); //Restart from the beggining to search for the label
+              char label = thread.getArg(0, 1); //TODO: switch to getRawArg()
+              char searching = 1;
+              while (searching) {
+                if (thread.ignore(selectedFile.readData()) == -3) { //label found, checking ID
+                  if (thread.getArg(0, 1) == label) searching = 0;  //right label found, exit jump
+                }
+              }
+            break;}
             case -6:  //pch I/R I/R
               lcdoutput.drawchar(thread.getArg(0, 1), thread.getArg(1, 1));
             break;

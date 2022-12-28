@@ -109,6 +109,15 @@ void ProgExec::setCommandLen(char command) {
     case -2:  //slp I/R I/R
       commandLen = 2; //waiting for two more arguments
     break;
+    case -3:  //lab I
+      commandLen = 1;
+    break;
+    case -4:  //jmp I
+      commandLen = 1;
+    break;
+    case -5:  //ldm I I
+      commandLen = 2;
+    break;
     case -6:  //pch I/R I/R
       commandLen = 2;
     break;
@@ -125,30 +134,20 @@ void ProgExec::setCommandLen(char command) {
 }
 
 char ProgExec::ignore(char command) { //same as execute() but doesn't execute 
-  if (!argIndex) {  //initialization of new commands
-    setCommandLen(command);
-  } 
-  argIndex++;
-  if (argIndex <= commandLen) { //command incomplete
-    return 0; //Ask for more arguments
-  }
+  if (!argIndex) setCommandLen(command); //initialization of new commands
+  arg[argIndex++] = command;
+  if (argIndex <= commandLen) return 0; //Command incomplete : ask for more arguments
   argIndex = 0;
   commandLen = 0;
-  if (arg[0] < 0) { //syscall
-    return arg[0];  //return syscall
-  }
+  if (arg[0] < 0) return arg[0];  //if syscall, return syscall
   return 1; //Instruction complete
 }
 
 char ProgExec::execute(char command) {
-  if (!argIndex) {  //initialization of new commands
-    setCommandLen(command);
-  } 
+  if (!argIndex) setCommandLen(command); //initialization of new commands
   if (arg[0] != 127) arg[argIndex] = command; //Load byte unless if jumping (because argIndex can exceed arg size);
   argIndex++;
-  if (argIndex <= commandLen) { //command incomplete
-    return 0; //Ask for more arguments
-  }
+  if (argIndex <= commandLen) return 0; //Command incomplete : ask for more arguments
   switch (arg[0]) {  //command execution
     case 1:   //LD
       acc = getArg(0, 1);
