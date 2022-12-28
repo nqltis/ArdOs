@@ -12,6 +12,7 @@ class ProgExec
   public:
     ProgExec();
     char execute(char command);
+    char ignore(char command);
     char getCommand();
     int getArg(char offset, unsigned char size);
     void getProgMem(char *output, unsigned char offset, unsigned char size);
@@ -22,6 +23,7 @@ class ProgExec
     char commandLen;
     char acc;
     char cond;
+    void setCommandLen(char command);
 };
 
 #endif

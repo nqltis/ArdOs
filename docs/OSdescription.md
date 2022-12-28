@@ -70,40 +70,43 @@ I : Integer
 
 #### General
 
-|Code |Keyword  |Description |
-|-----|---------|------------|
-|`-1`|`ext`		|exit program
-|`-2`|`slp I/R`  |sleep for a specified amount of time (I milliseconds)
+|Code |Keyword |Description |
+|-----|--------|------------|
+|`-1`|`ext`		 |exit program
+|`-2`|`slp I/R`|sleep for a specified amount of time (I milliseconds)
+|`-3`|`lab I`  |place a label for syscall jumps
+|`-4`|`jmp I`  |go to label 
+|`-5`|`ldm I I`|load the next I bytes of program memory to variable memory
 
 #### Screen Display
 
 |Code |Keyword  |Description |
 |-----|---------|------------|
-|`-3`|`pch I1 I2`|print char `I1` on the screen at slot `I2`
-|`-4`|`pst I1 I2`|print string of length `I2` stored in memory at `I1` 
+|`-6`|`pch I1 I2`|print char `I1` on the screen at slot `I2`
+|`-7`|`pst I1 I2`|print string of length `I2` stored in memory at `I1` 
 
 #### Button Input
 
 |Code |Keyword  |Description |
 |-----|---------|------------|
-|`-5`|`gch`		|get raw input
-|`-6`|`tch R`	|translate raw input to char
-|`-7`|`gst I1 I2`		|get string of size `I2` and write at address `I1`
+|`-8`|`gch`		|get raw input
+|`-9`|`tch R`	|translate raw input to char
+|`-10`|`gst I1 I2`		|get string of size `I2` and write at address `I1`
 
 #### GPIO
 
 |Code |Keyword  |Description |
 |-----|---------|------------|
-|`-8`|`rpn I`	|read pin `I`
-|`-9`|`wpn I`  |write pin `I`
+|`-11`|`rpn I`	|read pin `I`
+|`-12`|`wpn I`  |write pin `I`
 
 #### File system
 
 |Code |Keyword  |Description |
 |-----|---------|------------|
-|`-10`|`opn STR`|open file at path `STR`
-|`-11`|`clo`		|close file 
-|`-12`|`ldd I/R I`|load next `I/R` bytes of data from current file onto memory at adress `I`
-|`-13`|`opp STR`|prepare execution of program at path `STR` by allocating its memory. Values can be entered before its execution
-|`-14`|`exe`    |execute loaded program
-|`-15`|`pss`    |end current program then execute loaded program
+|`-13`|`opn STR`|open file at path `STR`
+|`-14`|`clo`		|close file 
+|`-15`|`ldd I/R I`|load next `I/R` bytes of data from open file to memory at adress `I`
+|`-16`|`opp STR`|prepare execution of program at path `STR` by allocating its memory. Values can be entered before its execution
+|`-17`|`exe`    |execute loaded program
+|`-18`|`pss`    |end current program then execute loaded program

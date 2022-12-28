@@ -35,8 +35,8 @@
 #define jmp 193
 #define ext 255
 #define slp 254
-#define pch 253
-#define pst 252
+#define pch 250
+#define pst 249
 
 static const unsigned char memory[] = {
   129, '/', fsz, fsz, 0, 6, 0, 50,            //0   /{

@@ -164,10 +164,10 @@ void loop() {
             case -2:  //slp I/R I/R
               delay(thread.getArg(0, 2)); //waiting for two more arguments
             break;
-            case -3:  //pch I/R I/R
+            case -6:  //pch I/R I/R
               lcdoutput.drawchar(thread.getArg(0, 1), thread.getArg(1, 1));
             break;
-            case -4:{ //pst I/R I/R
+            case -7:{ //pst I/R I/R
               char size = thread.getArg(1, 1);
               char line[16];
               thread.getProgMem(line, thread.getArg(0, 1), size);

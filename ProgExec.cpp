@@ -41,88 +41,108 @@ void ProgExec::getProgMem(char *output, unsigned char offset, unsigned char size
   }
 }
 
+void ProgExec::setCommandLen(char command) {
+  switch (command) {
+    case 0:   //NOP
+      commandLen = 0;
+    break;
+    case 1:   //LD
+      commandLen = 1;
+    break;
+    case 2:   //ST
+      commandLen = 1;
+    break; 
+    case 3:   //AND
+      commandLen = 1;
+    break; 
+    case 4:   //OR
+      commandLen = 1;
+    break; 
+    case 5:   //NOT
+      commandLen = 0;
+    break; 
+    case 6:   //XOR
+      commandLen = 1;
+    break; 
+    case 7:   //ADD
+      commandLen = 1;
+    break;
+    case 8:   //SUB
+      commandLen = 1;
+    break; 
+    case 9:   //MUL
+      commandLen = 1;
+    break; 
+    case 10:  //DIV
+      commandLen = 1;
+    break; 
+    case 11:  //MOD
+      commandLen = 1;
+    break; 
+    case 12:  //EQ
+      commandLen = 1;
+    break; 
+    case 13:  //GT
+      commandLen = 1;
+    break; 
+    case 14:  //LT
+      commandLen = 1;
+    break;
+    case 15:  //GE
+      commandLen = 1;
+    break;
+    case 16:  //LE
+      commandLen = 1;
+    break;
+    case 17:  //JMP
+      commandLen = 1;
+    break;
+    case 18:  //JMPC
+      commandLen = 1;
+    break;
+    case 19:  //JMPNC
+      commandLen = 1;
+    break;
+    case -1:  //ext
+      commandLen = 0;
+    break;
+    case -2:  //slp I/R I/R
+      commandLen = 2; //waiting for two more arguments
+    break;
+    case -6:  //pch I/R I/R
+      commandLen = 2;
+    break;
+    case -7:  //pst I/R I/R
+      commandLen = 2;
+    break;
+    case -64: //set loop start
+      commandLen = 0;
+    break;
+    case -63: //loop
+      commandLen = 0;
+    break;
+  }
+}
+
+char ProgExec::ignore(char command) { //same as execute() but doesn't execute 
+  if (!argIndex) {  //initialization of new commands
+    setCommandLen(command);
+  } 
+  argIndex++;
+  if (argIndex <= commandLen) { //command incomplete
+    return 0; //Ask for more arguments
+  }
+  argIndex = 0;
+  commandLen = 0;
+  if (arg[0] < 0) { //syscall
+    return arg[0];  //return syscall
+  }
+  return 1; //Instruction complete
+}
+
 char ProgExec::execute(char command) {
   if (!argIndex) {  //initialization of new commands
-    switch (command) {
-      case 0:   //NOP
-        commandLen = 0;
-      break;
-      case 1:   //LD
-        commandLen = 1;
-      break;
-      case 2:   //ST
-        commandLen = 1;
-      break; 
-      case 3:   //AND
-        commandLen = 1;
-      break; 
-      case 4:   //OR
-        commandLen = 1;
-      break; 
-      case 5:   //NOT
-        commandLen = 0;
-      break; 
-      case 6:   //XOR
-        commandLen = 1;
-      break; 
-      case 7:   //ADD
-        commandLen = 1;
-      break;
-      case 8:   //SUB
-        commandLen = 1;
-      break; 
-      case 9:   //MUL
-        commandLen = 1;
-      break; 
-      case 10:  //DIV
-        commandLen = 1;
-      break; 
-      case 11:  //MOD
-        commandLen = 1;
-      break; 
-      case 12:  //EQ
-        commandLen = 1;
-      break; 
-      case 13:  //GT
-        commandLen = 1;
-      break; 
-      case 14:  //LT
-        commandLen = 1;
-      break;
-      case 15:  //GE
-        commandLen = 1;
-      break;
-      case 16:  //LE
-        commandLen = 1;
-      break;
-      case 17:  //JMP
-        commandLen = 1;
-      break;
-      case 18:  //JMPC
-        commandLen = 1;
-      break;
-      case 19:  //JMPNC
-        commandLen = 1;
-      break;
-      case -1:  //ext
-        commandLen = 0;
-      break;
-      case -2:  //slp I/R I/R
-        commandLen = 2; //waiting for two more arguments
-      break;
-      case -3:  //pch I/R I/R
-        commandLen = 2;
-      break;
-      case -4:  //pst I/R I/R
-        commandLen = 2;
-      break;
-      case -64: //set loop start
-        commandLen = 0;
-      break;
-      case -63: //loop
-        commandLen = 0;
-      break;
-    }
+    setCommandLen(command);
   } 
   if (arg[0] != 127) arg[argIndex] = command; //Load byte unless if jumping (because argIndex can exceed arg size);
   argIndex++;
