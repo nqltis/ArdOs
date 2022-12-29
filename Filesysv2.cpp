@@ -38,6 +38,7 @@
 #define ldm 251
 #define pch 250
 #define pst 249
+#define gst 246
 
 static const unsigned char memory[] = {
   129, '/', fsz, fsz, 0, 6, 0, 50,            //0   /{
@@ -50,19 +51,19 @@ static const unsigned char memory[] = {
   196, 0, 0, 131, 'u', 's', 'r', fsz,         //56  
   fsz, 0, 69, empt, empt, 0, 192, 4,          //64
   'e', 'x', 'e', '2', fsz, fsz, 0, 80,        //72
-  0, 135, jmp, 1, lab, 5, pch, 'e',           //80
-  4, slp, 16, 0, ext, lab, 1, pch,            //88
-  'A', 0, jmp, 2, lab, 4, pch, 'c',           //96
-  2, jmp, 3, lab, 2, pch, 'b', 1,     //104
-  jmp, 4, lab, 3, pch, 'd', 3, jmp,     //112
-  5, NOP, NOP, NOP, NOP, NOP, NOP, NOP,     //120
-  NOP, NOP, NOP, slp, 8, 0, ext, 0,     //128
+  0, 135, gst, 0, 16, pst, 0, 16,           //80
+  slp, 8, 0, NOP, NOP, NOP, NOP, NOP,            //88
+  LD, 0, ADD, 32, ST, 0, NOP, NOP,           //96
+  LD, 1, ADD, 32, ST, 1, NOP, NOP,             //104
+  LD, 2, ADD, 32, ST, 2, NOP, NOP,           //112
+  LD, 3, ADD, 32, ST, 3, pst, 0,       //120
+  16, slp, 8, 0, ext, NOP, NOP, 0,           //128
   137, 0, 0, 3, 'e', 'x', 'e', fsz,           //136
   fsz, 0, 147, 0, 188, LD, 'A', ST,           //144
-  20, LD, 0, ST, 21, lab, 0, pch,             //152
-   148, 149, LD, 148, ADD, 1, ST, 20,         //160
-  NOP, LD, 149, ADD, 1, ST, 21, slp,          //168
-  0, 127, GE, 16, JMPC, 2, jmp, 0,            //176
+  20, LD, 0, ST, 21, lab, 0, LD,              //152
+  148, ST, 149, NOP, ADD, 1, ST, 20,          //160
+  NOP, LD, 149, ADD, 1, ST, 21, GE,           //168
+  16, JMPC, 2, jmp, 0, pst, 0, 16,            //176
   slp, 2, 0, ext, 0, 190, 0, 0,               //184
   0, 194, 0, 0, 0, 198, 0, 0                  //192
 };

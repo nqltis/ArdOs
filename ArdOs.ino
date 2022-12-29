@@ -74,6 +74,41 @@ void selectNextDir() {
   fileIndex = 0;
 }
 
+void stringInput(char *output, char *phrase) {
+  TypeSession typesession;      //Create new input session
+  char key = m16input.button(); //reset input key
+  lcdoutput.printScreen(phrase, "");
+  while (key != 'D') {    //press 'D' to exit
+    switch (key) {
+      case 0: //no input : do nothing
+      break;
+      case 'A':
+        typesession.eraseChar();
+        lcdoutput.printScreen(phrase, typesession.inputStr);
+      break;
+      case 'B':
+        typesession.nextChar();
+      break;
+      case 'C': //TODO : Cancel
+      break;
+      case '#': //Shift
+        typesession.chgCase();
+        lcdoutput.printScreen(phrase, typesession.inputStr);
+      break;
+      case '*':
+      break;
+      default:
+        typesession.enterKey(key);
+        lcdoutput.printScreen(phrase, typesession.inputStr);
+      break;
+    }
+    key = m16input.button();
+  }
+  for (char i = 0; i < 16; i++) {
+    output[i] = typesession.inputStr[i];
+  }
+}
+
 void loop() {
   switch (m16input.button()) {    //File Browser
     case 'A':
@@ -93,46 +128,15 @@ void loop() {
       printCurrent();
     break;
 
-
     case '#':                //New file menu    
     {
-      delay(10);
-      TypeSession typesession;      //Create new input session
-      char key = m16input.button(); //reset input key
-      lcdoutput.printScreen("New file name:", "");
-      while (key != 'D') {    //press 'D' to exit
-        switch (key) {
-          case 0: //no input : do nothing
-          break;
-          case 'A':
-            typesession.eraseChar();
-            lcdoutput.printScreen("New file name:", typesession.inputStr);
-          break;
-          case 'B':
-            typesession.nextChar();
-          break;
-          case 'C': //TODO : Cancel
-          break;
-          case '#': //Shift
-            typesession.chgCase();
-            lcdoutput.printScreen("New file name:", typesession.inputStr);
-          break;
-          case '*':
-          break;
-          default:
-            typesession.enterKey(key);
-            lcdoutput.printScreen("New file name:", typesession.inputStr);
-          break;
-        }
-        key = m16input.button();
-        delay(10);
-      }
-      lcdoutput.printScreen("Creating file:", typesession.inputStr);
+      char inputStr[16];
+      stringInput(inputStr, "New file name :");
+      lcdoutput.printScreen("Creating file:", inputStr);
       delay(2000);
       printCurrent();
-      break;
-    } break;
-
+    }
+    break;
 
     case '*':{ //Execute file
       selectedFile.open(); //TODO: Handle empty file & 'executable' flag
@@ -184,6 +188,19 @@ void loop() {
               line[size] = 0;
               lcdoutput.printScreen("", line);
             break;}
+            case -10: //gst I I
+            {
+              char inputStr[16];
+              stringInput(inputStr, "Input Queried :");
+              char destAddr = thread.getArg(0, 1);
+              char strSize = thread.getArg(1, 1);
+              for (char i = 0; i < 16; i++) {
+                if ((i >= strSize) || (inputStr[i] == 0)) break;
+                thread.putMem(inputStr[i], destAddr + i);
+              }
+              lcdoutput.printScreen("", "");
+            }
+            break;
           }
         }
       }

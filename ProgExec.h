@@ -16,6 +16,7 @@ class ProgExec
     char getCommand();
     int getArg(char offset, unsigned char size);
     void getProgMem(char *output, unsigned char offset, unsigned char size);
+    void putMem(char value, unsigned char address);
   private:
     char progmem[128];
     char arg[4];

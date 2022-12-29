@@ -41,6 +41,10 @@ void ProgExec::getProgMem(char *output, unsigned char offset, unsigned char size
   }
 }
 
+void ProgExec::putMem(char value, unsigned char address) {
+  progmem[address] = value;
+}
+
 void ProgExec::setCommandLen(char command) {
   switch (command) {
     case 0:   //NOP
@@ -122,6 +126,9 @@ void ProgExec::setCommandLen(char command) {
       commandLen = 2;
     break;
     case -7:  //pst I/R I/R
+      commandLen = 2;
+    break;
+    case -10: //gst I I
       commandLen = 2;
     break;
   }
