@@ -137,7 +137,6 @@ void loop() {
     case '*':{ //Execute file
       selectedFile.open(); //TODO: Handle empty file & 'executable' flag
       ProgExec thread;
-      File exeCopy; //Used for loops TODO: Remove
       char running = 1;
       while(selectedFile.dataRemaining() && running) {
         char progbyte = selectedFile.readData();
@@ -178,25 +177,18 @@ void loop() {
             case -6:  //pch I/R I/R
               lcdoutput.drawchar(thread.getArg(0, 1), thread.getArg(1, 1));
             break;
-            case -7:{ //pst I/R I/R
+            case -7:{ //pst I/R I/R     TODO: Handle >16 char calls
               char size = thread.getArg(1, 1);
               char line[16];
               thread.getProgMem(line, thread.getArg(0, 1), size);
               line[size] = 0;
               lcdoutput.printScreen("", line);
             break;}
-            case -64: //set loop start
-              exeCopy = selectedFile.copyFile();
-            break;
-            case -63: //loop
-              selectedFile = exeCopy;
-            break;
           }
         }
       }
     printCurrent();
     } break;
-
 
   }
   delay(10);

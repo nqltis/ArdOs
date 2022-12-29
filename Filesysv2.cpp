@@ -31,8 +31,6 @@
 #define JMP 17
 #define JMPC 18
 #define JMPNC 19
-#define lpst 192
-#define jmp 193
 #define ext 255
 #define slp 254
 #define lab 253
