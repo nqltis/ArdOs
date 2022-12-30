@@ -185,7 +185,6 @@ void loop() {
               char size = thread.getArg(1, 1);
               char line[16];
               thread.getProgMem(line, thread.getArg(0, 1), size);
-              line[size] = 0;
               lcdoutput.printScreen("", line);
             break;}
             case -10: //gst I I
@@ -195,7 +194,11 @@ void loop() {
               char destAddr = thread.getArg(0, 1);
               char strSize = thread.getArg(1, 1);
               for (char i = 0; i < 16; i++) {
-                if ((i >= strSize) || (inputStr[i] == 0)) break;
+                if (inputStr[i] == 0) {
+                  thread.putMem(0, destAddr + i);
+                  break;
+                }
+                if (i >= strSize) break;
                 thread.putMem(inputStr[i], destAddr + i);
               }
               lcdoutput.printScreen("", "");
