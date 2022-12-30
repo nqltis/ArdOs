@@ -15,23 +15,21 @@
 class File
 {
   public:
-    //File(FS_SIZE address, File *parentDir);
-    //File(char *path); //get to file from path
     File(FS_SIZE address); //Create parentless file (root)
     File(); //Create empty File
-    //void getName(char *str, int address);  //input char[] and file address. 
     void getName(char *str);  //input char[] and file address. 
-    int isDir();   //Check if given file is a directory
-    int isValid(); //Check if the file built from a char or address does actually exist
+    char isDir();   //Check if file is a directory
+    char isExecutable();  //Check if file is executable
+    char isValid(); //Check if the file built from a char or address does actually exist
     File getNextFile();
     void getPathString(char *output);
-    //void getParentString(char *output);
     File getParentDir();
     File enterDir();
     File copyFile();
     char open();
     char dataRemaining();
     unsigned char readData();
+    void initRoot();
   private:
     FS_SIZE path[FS_DEPTH];
     char level;
@@ -40,7 +38,6 @@ class File
     FS_SIZE currentAddress;
     int getContStart(); //follow redirections until content reached
     FS_SIZE followRedirect(FS_SIZE _initAddr); //getContStart without header skipping
-    //int findAddr(char *fileName, int dirAddr);
     int skipHeader(int address);
     int readInt(int address);
     int endDir();

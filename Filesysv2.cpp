@@ -41,7 +41,7 @@
 #define pst 249
 #define gst 246
 
-static const unsigned char memory[] = {
+static unsigned char memory[] = {
   129, '/', fsz, fsz, 0, 6, 0, 50,            //0   /{
   131, 'b', 'l', 'g', fsz, fsz, 0, 16,        //8   blg(
   0, 0, 6, 'L', 'O', '.', 't', 'x',           //16  ), syste
@@ -106,13 +106,16 @@ int File::skipHeader(int address) {
 int File::readInt(int address) {
   return ((memory[address] << 8) | memory[address + 1]);
 }
-int File::isDir() {
+char File::isDir() {
   return memory[path[level]] & 128;
 }
-int File::getNameSize() {
-  return memory[path[level]] & 127;
+char File::isExecutable() {
+  return memory[path[level]] & 64;
 }
-int File::isValid() {
+int File::getNameSize() {
+  return memory[path[level]] & 63;
+}
+char File::isValid() {
   if (level < 0) return 0; return 1;
 }
 
@@ -235,4 +238,14 @@ unsigned char File::readData() {
     currentAddress = startOfBlock + 2;
   }
   return memory[currentAddress++];
+}
+
+void File::initRoot() {
+  FS_SIZE _addr = path[level];
+  unsigned char stamp[10] = {
+    129, '/', 0, 10, 0, 6, 0, 8, 0, 0
+  };
+  for (char i = 0; i < 10; i++) {
+    memory[i] = stamp[i];
+  }
 }
