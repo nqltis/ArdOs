@@ -53,6 +53,9 @@ void ProgExec::setCommandLen(char command) {
     case 1:   //LD
       commandLen = 1;
     break;
+    case 20:  //LD_
+      commandLen = 1;
+    break;
     case 2:   //ST
       commandLen = 1;
     break; 
@@ -152,6 +155,9 @@ char ProgExec::execute(char command) {
   switch (arg[0]) {  //command execution
     case 1:   //LD
       acc = getArg(0, 1);
+    break;
+    case 20:  //LD_
+      acc = progmem[progmem[getArg(0, 1)]];
     break;
     case 2:   //ST
       progmem[getArg(0, 1)] = acc;

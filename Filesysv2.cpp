@@ -13,6 +13,7 @@
 
 #define NOP 0
 #define LD 1
+#define LD_ 20
 #define ST 2
 #define AND 3
 #define OR 4
@@ -51,13 +52,13 @@ static const unsigned char memory[] = {
   196, 0, 0, 131, 'u', 's', 'r', fsz,         //56  
   fsz, 0, 69, empt, empt, 0, 192, 4,          //64
   'e', 'x', 'e', '2', fsz, fsz, 0, 80,        //72
-  0, 135, gst, 0, 16, pst, 0, 16,           //80
-  slp, 8, 0, NOP, NOP, NOP, NOP, NOP,            //88
-  LD, 0, ADD, 32, ST, 0, NOP, NOP,           //96
-  LD, 1, ADD, 32, ST, 1, NOP, NOP,             //104
-  LD, 2, ADD, 32, ST, 2, NOP, NOP,           //112
-  LD, 3, ADD, 32, ST, 3, pst, 0,       //120
-  16, slp, 8, 0, ext, NOP, NOP, 0,           //128
+  0, 135, gst, 0, 16, pst, 0, 16,             //80
+  slp, 8, 0, LD, 0, ST, 20, lab,              //88
+  0, LD_, 20, SUB, 32, ST, 148, LD,           //96
+  148, ADD, 1, ST, 20, GE, 16, JMPC,          //104
+  2, jmp, 0, pst, 0, 16, slp, 8,              //112
+  0, ext, NOP, NOP, NOP, NOP, NOP, NOP,       //120
+  NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP,     //128
   137, 0, 0, 3, 'e', 'x', 'e', fsz,           //136
   fsz, 0, 147, 0, 188, LD, 'A', ST,           //144
   20, LD, 0, ST, 21, lab, 0, LD,              //152
@@ -68,10 +69,10 @@ static const unsigned char memory[] = {
   0, 194, 0, 0, 0, 198, 0, 0                  //192
 };
 /* empty exe file
-  fsz, 0, 147, 0, 188, empt, empt, empt,            //144
-  empt, empt, empt, empt, empt, empt, empt, empt,         //152
-  empt, empt, empt, empt, empt, empt, empt, empt,           //160
-  empt, empt, empt, empt, empt, empt, empt, empt,        //168
+  fsz, 0, 147, 0, 188, empt, empt, empt,          //144
+  empt, empt, empt, empt, empt, empt, empt, empt, //152
+  empt, empt, empt, empt, empt, empt, empt, empt, //160
+  empt, empt, empt, empt, empt, empt, empt, empt, //168
   empt, empt, empt, empt, empt, empt, empt, empt, //176
   empt, empt, empt, empt, 0, 190, 0, 0,           //184
   0, 194, 0, 0, 0, 198, 0, 0                      //192
