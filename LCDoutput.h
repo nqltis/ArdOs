@@ -14,7 +14,7 @@ class LCDoutput
     public:
       LCDoutput(byte RS, byte RW, byte E, byte DataPins[8]);
       void drawchar(char chr, byte pos);
-      void printScreen(String line1, String line2);
+      void printScreen(char *line1, char *line2);
       void init();
     private:
       byte _rs;

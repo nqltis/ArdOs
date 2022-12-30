@@ -24,14 +24,6 @@ LCDoutput::LCDoutput(byte RS, byte RW, byte E, byte DataPins[8]) {
     pinMode(_datapins[i], OUTPUT);
     digitalWrite(_datapins[i], LOW);
   }
-  //delay(2000);
-  //execinstr(1);    //Clear the screen
-  //execinstr(2);    //Return home
-  //execinstr(6);    //Entry mode
-  //execinstr(14);   //Display on, Cursor on
-  //execinstr(20);   //Enable autoshift right
-  //execinstr(58);   //Function set
-  //execinstr(12);   //Cursor off
 }
 
 void LCDoutput::init() {
@@ -76,15 +68,19 @@ void LCDoutput::drawchar(char chr, byte pos) {
   senddata(chr);
 }
 
-void LCDoutput::printScreen(String line1, String line2) {
-  line1 += "                ";
-  line2 += "                ";
+void LCDoutput::printScreen(char *line1, char *line2) {
   execinstr(128);
-  for (byte i = 0; i < 16; i++) {
-    senddata(line1[i]);
+  char endOfString = 0;
+  for (byte i = 0; i < 16; i++) { //Line 1
+    if (!endOfString && (line1[i] == 0)) endOfString = 1;
+    if (!endOfString) senddata(line1[i]);
+    else senddata(32);  //Fill with space
   }
   execinstr(192);
-  for (byte i = 0; i < 16; i++) {
-    senddata(line2[i]);
+  endOfString = 0;
+  for (byte i = 0; i < 16; i++) { //Line 2
+    if (!endOfString && (line2[i] == 0)) endOfString = 1;
+    if (!endOfString) senddata(line2[i]);
+    else senddata(32);  //Fill with space
   }
 }
