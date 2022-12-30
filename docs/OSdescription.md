@@ -27,6 +27,7 @@ I : Integer
 |Code |Keyword | Description |
 |-----|--------|-------------|
 |`1`  |`LD I/R`| Load value into `accumulator` (`acc`)
+|`20` |`LD.. I/R`| Load register at double redirection of `I/R` into `acc` ()
 |`2`  |`ST R`  | Store `acc` value into specified register
 
 #### Logic Instructions
@@ -72,26 +73,26 @@ I : Integer
 
 |Code |Keyword |Description |
 |-----|--------|------------|
-|`-1`|`ext`		 |exit program
-|`-2`|`slp I/R`|sleep for a specified amount of time (I milliseconds)
-|`-3`|`lab I`  |place a label for syscall jumps
-|`-4`|`jmp I`  |go to label 
-|`-5`|`ldm I I`|load the next I bytes of program memory to variable memory
+|`-1` |`ext`		 |exit program
+|`-2` |`slp I/R`|sleep for a specified amount of time (I milliseconds)
+|`-3` |`lab I`  |place a label for syscall jumps
+|`-4` |`jmp I`  |go to label 
+|`-5` |`ldm I I`|load the next `I1` bytes of program memory to variable memory at address `I2`
 
 #### Screen Display
 
 |Code |Keyword  |Description |
 |-----|---------|------------|
-|`-6`|`pch I1 I2`|print char `I1` on the screen at slot `I2`
-|`-7`|`pst I1 I2`|print string of length `I2` stored in memory at `I1` 
+|`-6` |`pch I1 I2`|print char `I1` on the screen at slot `I2`
+|`-7` |`pst I1 I2`|print string of length `I2` stored in memory at `I1` 
 
 #### Button Input
 
 |Code |Keyword  |Description |
 |-----|---------|------------|
-|`-8`|`gch`		|get raw input
-|`-9`|`tch R`	|translate raw input to char
-|`-10`|`gst I1 I2`		|get string of size `I2` and write at address `I1`
+|`-8` |`gch`		|get raw input
+|`-9` |`tch R`	|translate raw input to char
+|`-10`|`gst I1 I2`|get string of size `I2` and write at address `I1`
 
 #### GPIO
 
