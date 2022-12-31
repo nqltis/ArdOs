@@ -10,6 +10,7 @@
 
 #include "ustrlib.h"
 #define FS_SIZE int //Size of pointers (limits memory size)
+#define FS_SIZE_N 2 //Number of bytes of pointers TODO: implement FS_SIZE
 #define FS_DEPTH 8 //Maximum depth of file system (Max level of dir tree)
 
 class File
@@ -41,7 +42,7 @@ class File
     int skipHeader(int address);
     int readInt(int address);
     int endDir();
-    int getNameSize();
+    unsigned char getNameSize();
 };
 
 

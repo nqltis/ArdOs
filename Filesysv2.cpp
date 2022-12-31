@@ -50,7 +50,7 @@ static unsigned char memory[] = {
   41, 0, 48, 'h', 'e', 'l', 'l', 'o',         //40  (hello
   0, 57, 0, 55, empt, empt, empt, 0,          //48
   196, 0, 0, 131, 'u', 's', 'r', fsz,         //56  
-  fsz, 0, 69, empt, empt, 0, 192, 4,          //64
+  fsz, 0, 69, empt, empt, 0, 192, 68,         //64
   'e', 'x', 'e', '2', fsz, fsz, 0, 80,        //72
   0, 135, gst, 0, 16, pst, 0, 16,             //80
   slp, 8, 0, LD, 0, ST, 20, lab,              //88
@@ -59,7 +59,7 @@ static unsigned char memory[] = {
   2, jmp, 0, pst, 0, 16, slp, 8,              //112
   0, ext, NOP, NOP, NOP, NOP, NOP, NOP,       //120
   NOP, NOP, NOP, NOP, NOP, NOP, NOP, NOP,     //128
-  137, 0, 0, 3, 'e', 'x', 'e', fsz,           //136
+  137, 0, 0, 67, 'e', 'x', 'e', fsz,          //136
   fsz, 0, 147, 0, 188, LD, 'A', ST,           //144
   20, LD, 0, ST, 21, lab, 0, LD,              //152
   148, ST, 149, NOP, ADD, 1, ST, 20,          //160
@@ -101,7 +101,7 @@ File File::copyFile() {
 }
 
 int File::skipHeader(int address) {
-  return address + (memory[address] & 127) + 3;
+  return address + (memory[address] & 63) + 3;
 }
 int File::readInt(int address) {
   return ((memory[address] << 8) | memory[address + 1]);
@@ -112,7 +112,7 @@ char File::isDir() {
 char File::isExecutable() {
   return memory[path[level]] & 64;
 }
-int File::getNameSize() {
+unsigned char File::getNameSize() {
   return memory[path[level]] & 63;
 }
 char File::isValid() {
@@ -121,8 +121,8 @@ char File::isValid() {
 
 void File::getName(char *str) {  //input char[] and file address. 
                                               //write in char[] name of file at address.
-  int sizeOfName = getNameSize(); //get rid of dir flag
-  for (int i = 1; i <= sizeOfName; i++) {
+  unsigned char sizeOfName = getNameSize(); //get rid of dir flag
+  for (unsigned char i = 1; i <= sizeOfName; i++) {
     str[i - 1] = memory[path[level] + i]; 
   }
   str[sizeOfName] = 0;

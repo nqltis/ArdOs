@@ -27,8 +27,26 @@ byte fileIndex = 0; //Selected File index in directory
 char buff1[16] = "";
 char buff2[16] = "";
 void setup() {  
-  selectedFile = selectedFile.enterDir();
   lcdoutput.init();
+  selectedFile.getName(buff1);  //TODO: unsafe if name size > 16
+  //if ((buff1[0] != '/') || (buff1[1] != 0)) { //If first dir isn't root, it is invalid
+    lcdoutput.printScreen(" Root not found", "Redirect to ctrl");
+    delay(2000);
+    lcdoutput.printScreen("==Control Menu==", "1:initFS");
+    char inMenu = 1;
+    while(inMenu) {
+      switch (m16input.button()) {
+        case 'C':
+          inMenu = 0;
+        break;
+        case '1':
+          selectedFile.initRoot();
+          inMenu = 0;
+        break;
+      }
+    }
+  //}
+  selectedFile = selectedFile.enterDir(); //TODO: check if root is valid
   printCurrent();
 }
 
@@ -38,13 +56,16 @@ void printCurrent() {
     parent.getPathString(buff1);
     selectedFile.getName(buff2);
     lcdoutput.printScreen(buff1, buff2);
+    if (selectedFile.isExecutable()) lcdoutput.drawchar('*', 31);
     if (selectedFile.isDir()) lcdoutput.drawchar('>', 31);
     return;
   }
   shadowFile.getName(buff1);
   selectedFile.getName(buff2);
   lcdoutput.printScreen(buff1, buff2);
+  if (shadowFile.isExecutable()) lcdoutput.drawchar('*', 15);
   if (shadowFile.isDir()) lcdoutput.drawchar('>', 15);
+  if (selectedFile.isExecutable()) lcdoutput.drawchar('*', 31);
   if (selectedFile.isDir()) lcdoutput.drawchar('>', 31);
 }
 void selectPrevFile() {
@@ -72,6 +93,17 @@ void selectNextDir() {
   if (!content.isValid()) {lcdoutput.drawchar('E', 30); delay(1000); return;}; //if dir empty, return
   selectedFile = content;
   fileIndex = 0;
+}
+void controlMenu() {
+  lcdoutput.printScreen("1:mkf 2:mkd 3:rm", "4:dbg 5:chex");
+  char inMenu = 1;
+  while(inMenu) {
+    switch (m16input.button()) {
+      case 'C':
+        inMenu = 0;
+      break;
+    }
+  }
 }
 
 void stringInput(char *output, char *phrase) {
@@ -128,25 +160,29 @@ void loop() {
       printCurrent();
     break;
 
-    case '#':                //New file menu    
-    {
+    case '#':   //Control menu
+      controlMenu();
+      printCurrent();
+    break;
+    /*{ //New file menu
       char inputStr[16];
       stringInput(inputStr, "New file name :");
       lcdoutput.printScreen("Creating file:", inputStr);
       delay(2000);
       printCurrent();
     }
-    break;
+    break;  */
 
     case '*':{ //Execute file
-      selectedFile.open(); //TODO: Handle empty file & 'executable' flag
+      if (!selectedFile.isExecutable()) break;
+      selectedFile.open();
       ProgExec thread;
       char running = 1;
       while(selectedFile.dataRemaining() && running) {
         char progbyte = selectedFile.readData();
         char callcode = thread.execute(progbyte);
+        /* debug  
         char text[4];
-        /* debug
         toString(text, progbyte);
         lcdoutput.drawchar(text[0], 28);
         lcdoutput.drawchar(text[1], 29);
@@ -157,7 +193,7 @@ void loop() {
         lcdoutput.drawchar(text[1], 13);
         lcdoutput.drawchar(text[2], 14);
         lcdoutput.drawchar(text[3], 15);
-        delay(600);
+        delay(1000);
         // */
         if (callcode < 0) { //handle syscall
           switch (callcode) {
