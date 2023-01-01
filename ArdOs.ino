@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "M16input.h"
 #include "LCDoutput.h"
-#include "Filesysv2.h"
+#include "Filesysv3.h"
 #include "ustrlib.h"
 #include "T9typelib.h"
 #include "ProgExec.h"
@@ -19,8 +19,10 @@ const byte DataPin[8] = {
 };
 LCDoutput lcdoutput(RS, RW, E, DataPin);
 
-File selectedFile(0); //root
-File shadowFile; //empty File
+File workingDir(0);  //root
+File shadowFile;
+//File file1;
+//File file2;
 
 byte fileIndex = 0; //Selected File index in directory
 
@@ -28,7 +30,7 @@ char buff1[16] = "";
 char buff2[16] = "";
 void setup() {  
   lcdoutput.init();
-  selectedFile.getName(buff1);  //TODO: unsafe if name size > 16
+  workingDir.getName(buff1);
   //if ((buff1[0] != '/') || (buff1[1] != 0)) { //If first dir isn't root, it is invalid
     lcdoutput.printScreen(" Root not found", "Redirect to ctrl");
     delay(2000);
@@ -40,58 +42,58 @@ void setup() {
           inMenu = 0;
         break;
         case '1':
-          selectedFile.initRoot();
+          workingDir.initfs(0);
           inMenu = 0;
         break;
       }
     }
   //}
-  selectedFile = selectedFile.enterDir(); //TODO: check if root is valid
+  //workingDir = workingDir.getChild(); //TODO: check if root is valid
   printCurrent();
 }
 
 void printCurrent() {
   if (!fileIndex) {
-    File parent = selectedFile.getParentDir();
-    parent.getPathString(buff1);
-    selectedFile.getName(buff2);
+    File parent = workingDir.getParent();
+    //parent.getPathString(buff1);
+    workingDir.getName(buff2);
     lcdoutput.printScreen(buff1, buff2);
-    if (selectedFile.isExecutable()) lcdoutput.drawchar('*', 31);
-    if (selectedFile.isDir()) lcdoutput.drawchar('>', 31);
+    if (workingDir.isExecutable()) lcdoutput.drawchar('*', 31);
+    if (workingDir.isDir()) lcdoutput.drawchar('>', 31);
     return;
   }
   shadowFile.getName(buff1);
-  selectedFile.getName(buff2);
+  workingDir.getName(buff2);
   lcdoutput.printScreen(buff1, buff2);
   if (shadowFile.isExecutable()) lcdoutput.drawchar('*', 15);
   if (shadowFile.isDir()) lcdoutput.drawchar('>', 15);
-  if (selectedFile.isExecutable()) lcdoutput.drawchar('*', 31);
-  if (selectedFile.isDir()) lcdoutput.drawchar('>', 31);
+  if (workingDir.isExecutable()) lcdoutput.drawchar('*', 31);
+  if (workingDir.isDir()) lcdoutput.drawchar('>', 31);
 }
 void selectPrevFile() {
-  selectedFile = selectedFile.getParentDir(); //Exit then enter dir
-  selectedFile = selectedFile.enterDir();
+  workingDir = workingDir.getParent(); //Exit then enter dir
+  workingDir = workingDir.getChild();
   fileIndex = 0;
 }
 void selectNextFile() {
-  File next = selectedFile.getNextFile();
+  File next = workingDir.getNext();
   if (!next.isValid()) return;
-  shadowFile = selectedFile;
-  selectedFile = next;
+  shadowFile = workingDir;
+  workingDir = next;
   fileIndex++;
 }
 void selectPrevDir() {
-  File parent = selectedFile.getParentDir();
+  File parent = workingDir.getParent();
   if (!parent.isValid()) return;
-  selectedFile = selectedFile.getParentDir();
+  workingDir = workingDir.getParent();
   fileIndex = 0;
   selectPrevFile();
 }
 void selectNextDir() {
-  if (!selectedFile.isDir()) return; //if not dir, return
-  File content = selectedFile.enterDir();
+  if (!workingDir.isDir()) return; //if not dir, return
+  File content = workingDir.getChild();
   if (!content.isValid()) {lcdoutput.drawchar('E', 30); delay(1000); return;}; //if dir empty, return
-  selectedFile = content;
+  workingDir = content;
   fileIndex = 0;
 }
 void controlMenu() {
@@ -173,14 +175,15 @@ void loop() {
     }
     break;  */
 
+/*
     case '*':{ //Execute file
-      if (!selectedFile.isExecutable()) break;
-      selectedFile.open();
+      if (!workingDir.isExecutable()) break;
+      workingDir.open();
       ProgExec thread;
       char running = 1;
-      while(selectedFile.dataRemaining() && running) {
-        char progbyte = selectedFile.readData();
-        char callcode = thread.execute(progbyte);
+      while(workingDir.dataRemaining() && running) {
+        char progbyte = workingDir.read();
+        char callcode = thread.execute(progbyte); */
         /* debug  
         char text[4];
         toString(text, progbyte);
@@ -194,7 +197,7 @@ void loop() {
         lcdoutput.drawchar(text[2], 14);
         lcdoutput.drawchar(text[3], 15);
         delay(1000);
-        // */
+        // */   /*
         if (callcode < 0) { //handle syscall
           switch (callcode) {
             case -1:  //ext
@@ -205,11 +208,11 @@ void loop() {
             break;
             case -3: break; //lab I (no action on reading)
             case -4:{  //jmp I
-              selectedFile.open(); //Restart from the beggining to search for the label
+              //workingDir.open(); //Restart from the beggining to search for the label
               char label = thread.getArg(0, 1); //TODO: switch to getRawArg()
               char searching = 1;
               while (searching) {
-                if (thread.ignore(selectedFile.readData()) == -3) { //label found, checking ID
+                if (thread.ignore(workingDir.read()) == -3) { //label found, checking ID
                   if (thread.getArg(0, 1) == label) searching = 0;  //right label found, exit jump
                 }
               }
@@ -245,7 +248,7 @@ void loop() {
       }
     printCurrent();
     } break;
-
+    */
   }
   delay(10);
 }

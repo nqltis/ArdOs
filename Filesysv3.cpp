@@ -6,6 +6,7 @@
 */
 
 #include <EEPROM.h>
+#include "ustrlib.h"
 #include "Filesysv3.h"
 
 File::File() {  //Create Invalid File
@@ -27,6 +28,9 @@ void File::initfs(int offset) {
   for (char i = 0; i < 5; i++) EEPROM.update(offset + i, rootHeader[i]);
 }
 
+char File::isValid() {
+  return (EEPROM.read(headerPtr) != 255);
+}
 char File::isDir() {
   return EEPROM.read(headerPtr) & 128;
 }
@@ -42,25 +46,43 @@ void File::getName(char *output) {
   }
 }
 
-void File::getParent() {
+File File::getParent() {
   unsigned char ptrOffset = BLOCK_ID_SIZE;
   HEADER_ID_TYPE targetAddr = EEPROM.read(headerPtr + ptrOffset);
-  if (targetAddr != 0) headerPtr = targetAddr;
+  return File(targetAddr);
 }
-void File::getChild() {
+File File::getChild() {
   unsigned char ptrOffset = BLOCK_ID_SIZE + HEADER_ID_SIZE;
   HEADER_ID_TYPE targetAddr = EEPROM.read(headerPtr + ptrOffset);
-  if (targetAddr != 0) headerPtr = targetAddr;
+  if (targetAddr != 0) return File(targetAddr);
+  return File();
 }
-void File::getPrev() {
+File File::getPrev() {
   unsigned char ptrOffset = BLOCK_ID_SIZE + 2*HEADER_ID_SIZE;
   HEADER_ID_TYPE targetAddr = EEPROM.read(headerPtr + ptrOffset);
-  if (targetAddr != 0) headerPtr = targetAddr;
+  if (targetAddr != 0) return File(targetAddr);
+  return File();
 }
-void File::getNext() {
+File File::getNext() {
   unsigned char ptrOffset = BLOCK_ID_SIZE + 3*HEADER_ID_SIZE;
   HEADER_ID_TYPE targetAddr = EEPROM.read(headerPtr + ptrOffset);
-  if (targetAddr != 0) headerPtr = targetAddr;
+  if (targetAddr != 0) return File(targetAddr);
+  return File();
+}
+
+void File::pathString(char *output) { //Recursive function
+  char str[BLOCK_SIZE - 1];
+  getName(str);
+  if (strCompare(str, "/")) { //init
+    output[0] = '/';
+    output[1] = 0;
+    return;
+  }
+  File parent = getParent();
+  parent.pathString(output);
+  strConcat(str, "/");
+  strConcat(output, str);
+  return;
 }
 
 BLOCK_ID_TYPE File::getFirstBlock() {

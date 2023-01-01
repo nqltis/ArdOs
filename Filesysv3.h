@@ -9,6 +9,7 @@
 #define CAO_FILE_SYSTEM_V3
 
 #include <EEPROM.h>
+#include "ustrlib.h"
 
 #define BLOCK_SIZE 16
 #define BLOCK_ID_TYPE unsigned char
@@ -27,16 +28,18 @@ class File
     File();
     File(HEADER_ID_TYPE _headerPtr);
     void initfs(int offset);
+    char isValid();
     char isDir();
     char isExecutable();
     void getName(char *output);
-    void getParent();
-    void getChild();
-    void getPrev();
-    void getNext();
-    void open();
-    char dataRemaining();
-    unsigned char read();
+    File getParent();
+    File getChild();
+    File getPrev();
+    File getNext();
+    //void open();
+    //char dataRemaining();
+    //unsigned char read();
+    void pathString(char *output);
   private:
     HEADER_ID_TYPE headerPtr;
     BLOCK_ID_TYPE block;  //Set when open
