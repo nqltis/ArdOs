@@ -49,7 +49,7 @@ class File
     BLOCK_ID_TYPE block;  //Set when open
     unsigned char index;  //Set when open
     HEADER_ID_TYPE getHeader();
-    BLOCK_ID_TYPE getFirstBlock();
+    ABS_ADDR_TYPE getFirstBlock();
     BLOCK_ID_TYPE getFreeBlock();
     HEADER_ID_TYPE getFreeHeader();
     void reserveBlock(BLOCK_ID_TYPE blockId);

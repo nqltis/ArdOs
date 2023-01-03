@@ -104,7 +104,7 @@ void File::mkdir(File workingDir, char *name) {
   makefile(workingDir, name, 64);
 }
 
-BLOCK_ID_TYPE File::getFirstBlock() {
+ABS_ADDR_TYPE File::getFirstBlock() {
   return BLOCK_AREA_OFFSET + BLOCK_SIZE * (EEPROM.read(headerPtr * HEADER_SIZE + 1));
 }
 BLOCK_ID_TYPE File::getFreeBlock() {

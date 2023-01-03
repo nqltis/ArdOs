@@ -115,6 +115,7 @@ void controlMenu() {
         
         if (!file1.isValid()) file1 = workingDir.getChild();
         printCurrent();
+        inMenu = 0;
       } break;
       case '2':{  //New dir menu
         char inputStr[16];
@@ -127,9 +128,22 @@ void controlMenu() {
         
         if (!file1.isValid()) file1 = workingDir.getChild();
         printCurrent();
+        inMenu = 0;
       } break;
-      case '3':   //remove file
-      break;
+      case '3':{   //remove file
+        char str[5];
+        str[4] = 0;
+        lcdoutput.printScreen("", "");
+        for (unsigned int i = 224; i < 272; i++) {
+          toString(str, (i));
+          lcdoutput.printScreen(str, "");
+          char val = workingDir.readRawMem(i);
+          if (val > 32) lcdoutput.drawchar(val, 31);
+          else lcdoutput.drawchar(val + 48, 31);
+          delay(1000);
+        }
+        inMenu = 0;
+      } break;
       case '4':{  //New executable menu
         char inputStr[16];
         stringInput(inputStr, "New exe name :");
@@ -141,8 +155,9 @@ void controlMenu() {
         
         if (!file1.isValid()) file1 = workingDir.getChild();
         printCurrent();
+        inMenu = 0;
       } break;
-      case '5':
+      case '5':{  //debug
         char str[5];
         str[4] = 0;
         lcdoutput.printScreen("", "");
@@ -155,8 +170,8 @@ void controlMenu() {
           delay(1000);
         }
         inMenu = 0;
-      break;
-      case '6':
+      } break;
+      case '6':   //initfs
         lcdoutput.printScreen("Erasing Memory &", "Initializing");
         workingDir.initfs(0);
         inMenu = 0;
@@ -304,7 +319,7 @@ void loop() {
 }
 
 
-void toString(char *output, char num) {//debug
+void toString(char *output, int num) {//debug
   if (num < 0) {
     output[0] = '-';
     num *= -1;
