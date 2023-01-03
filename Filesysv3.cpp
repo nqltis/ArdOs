@@ -157,7 +157,7 @@ void File::makefile(File workingDir, char *name, unsigned char flags) {
     EEPROM.update(workingDir.headerPtr * HEADER_SIZE + BLOCK_ID_SIZE + HEADER_ID_SIZE + 1, newHeader);
     fileHeader[4] = 0;
   } else {
-    while (_file.isValid()) { //Get last file of working dir
+    while (_file.getNext().isValid()) { //Get last file of working dir
       _file = _file.getNext();
     }
     EEPROM.update(_file.headerPtr * HEADER_SIZE + BLOCK_ID_SIZE + 3*HEADER_ID_SIZE + 1, newHeader); //Set as next file of found file
