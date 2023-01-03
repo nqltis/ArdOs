@@ -149,7 +149,7 @@ void controlMenu() {
         stringInput(inputStr, "New exe name :");
         if (inputStr[0] == 255) break;
         inputStr[14] = 0;
-        workingDir.mkdir(workingDir, inputStr);
+        workingDir.mkexe(workingDir, inputStr);
         lcdoutput.printScreen("Created exe :", inputStr);
         delay(1000);
         
@@ -174,6 +174,7 @@ void controlMenu() {
       case '6':   //initfs
         lcdoutput.printScreen("Erasing Memory &", "Initializing");
         workingDir.initfs(0);
+        file1 = File();
         inMenu = 0;
       break;
     }

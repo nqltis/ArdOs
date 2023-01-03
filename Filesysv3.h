@@ -43,6 +43,7 @@ class File
     void pathString(char *output);
     void mkfile(File workingDir, char *name);
     void mkdir(File workingDir, char *name);
+    void mkexe(File workingDir, char *name);
     unsigned char readRawMem(unsigned int pos);
   private:
     HEADER_ID_TYPE headerPtr;

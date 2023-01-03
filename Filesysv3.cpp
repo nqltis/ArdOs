@@ -103,6 +103,9 @@ void File::mkfile(File workingDir, char *name) {
 void File::mkdir(File workingDir, char *name) {
   makefile(workingDir, name, 64);
 }
+void File::mkexe(File workingDir, char *name) {
+  makefile(workingDir, name, 32);
+}
 
 ABS_ADDR_TYPE File::getFirstBlock() {
   return BLOCK_AREA_OFFSET + BLOCK_SIZE * (EEPROM.read(headerPtr * HEADER_SIZE + 1));
