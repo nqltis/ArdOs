@@ -21,8 +21,8 @@ LCDoutput lcdoutput(RS, RW, E, DataPin);
 
 File workingDir(0);  //root
 File shadowFile;
-//File file1;
-//File file2;
+File file1;
+File file2;
 
 byte fileIndex = 0; //Selected File index in directory
 
@@ -31,7 +31,7 @@ char buff2[16] = "";
 void setup() {  
   lcdoutput.init();
   workingDir.getName(buff1);
-  //if ((buff1[0] != '/') || (buff1[1] != 0)) { //If first dir isn't root, it is invalid
+  if (!strCompare(buff1, "/")) { //If first dir isn't root, fs is invalid
     lcdoutput.printScreen(" Root not found", "Redirect to ctrl");
     delay(2000);
     lcdoutput.printScreen("==Control Menu==", "1:initFS");
@@ -42,69 +42,127 @@ void setup() {
           inMenu = 0;
         break;
         case '1':
+          lcdoutput.printScreen("Erasing Memory &", "Initializing");
           workingDir.initfs(0);
           inMenu = 0;
         break;
       }
     }
-  //}
-  //workingDir = workingDir.getChild(); //TODO: check if root is valid
+  }
+  lcdoutput.printScreen("=== Welcome  ===", "");
+  delay(1000);
+  file1 = workingDir.getChild();
   printCurrent();
 }
 
 void printCurrent() {
-  if (!fileIndex) {
-    File parent = workingDir.getParent();
-    //parent.getPathString(buff1);
-    workingDir.getName(buff2);
-    lcdoutput.printScreen(buff1, buff2);
-    if (workingDir.isExecutable()) lcdoutput.drawchar('*', 31);
-    if (workingDir.isDir()) lcdoutput.drawchar('>', 31);
-    return;
-  }
-  shadowFile.getName(buff1);
-  workingDir.getName(buff2);
+  if (file1.isValid()) file1.getName(buff2); 
+  else buff2[0] = 0;
+  if (file2.isValid()) file2.getName(buff1); 
+  else workingDir.pathString(buff1);
+  //else buff1[0] = 0;
   lcdoutput.printScreen(buff1, buff2);
-  if (shadowFile.isExecutable()) lcdoutput.drawchar('*', 15);
-  if (shadowFile.isDir()) lcdoutput.drawchar('>', 15);
-  if (workingDir.isExecutable()) lcdoutput.drawchar('*', 31);
-  if (workingDir.isDir()) lcdoutput.drawchar('>', 31);
+  if (file2.isExecutable()) lcdoutput.drawchar('*', 15);
+  if (file2.isDir()) lcdoutput.drawchar('>', 15);
+  if (file1.isExecutable()) lcdoutput.drawchar('*', 31);
+  if (file1.isDir()) lcdoutput.drawchar('>', 31);
 }
 void selectPrevFile() {
-  workingDir = workingDir.getParent(); //Exit then enter dir
-  workingDir = workingDir.getChild();
-  fileIndex = 0;
+  if (file2.isValid()) {
+    file1 = file2;
+    file2 = file2.getPrev();
+  }
 }
 void selectNextFile() {
-  File next = workingDir.getNext();
-  if (!next.isValid()) return;
-  shadowFile = workingDir;
-  workingDir = next;
-  fileIndex++;
+  if (file1.getNext().isValid()) {
+    file2 = file1;
+    file1 = file1.getNext();
+  }
 }
 void selectPrevDir() {
-  File parent = workingDir.getParent();
-  if (!parent.isValid()) return;
-  workingDir = workingDir.getParent();
-  fileIndex = 0;
-  selectPrevFile();
+  workingDir = workingDir.getParent();  //Get parent before child to handle root dir
+  file1 = workingDir.getChild();
+  file2 = file1.getPrev();
 }
 void selectNextDir() {
-  if (!workingDir.isDir()) return; //if not dir, return
-  File content = workingDir.getChild();
-  if (!content.isValid()) {lcdoutput.drawchar('E', 30); delay(1000); return;}; //if dir empty, return
-  workingDir = content;
-  fileIndex = 0;
+  if (!file1.isDir()) return; //if not dir, return
+  workingDir = file1;
+  file1 = workingDir.getChild();
+  file2 = File();
 }
 void controlMenu() {
-  lcdoutput.printScreen("1:mkf 2:mkd 3:rm", "4:dbg 5:chex");
+  lcdoutput.printScreen("1:mkf 2:mkd 3:rm", "4:mkex 5:dbg  `/");
   char inMenu = 1;
   while(inMenu) {
     switch (m16input.button()) {
+      case 'A':
+      case 'B':
+        inMenu ^= 2;
+        if (inMenu == 1) lcdoutput.printScreen("1:mkf 2:mkd 3:rm", "4:mkex 5:dbg  `/");
+        else lcdoutput.printScreen("4:mkex 5:dbg  /`", "6:initfs");
+      break;
       case 'C':
         inMenu = 0;
       break;
+      case '1':{  //New file menu
+        char inputStr[16];
+        stringInput(inputStr, "New file name :");
+        if (inputStr[0] == 255) break;
+        inputStr[14] = 0;
+        lcdoutput.printScreen("Created file :", inputStr);
+        workingDir.mkfile(workingDir, inputStr);
+        delay(1000);
+        
+        if (!file1.isValid()) file1 = workingDir.getChild();
+        printCurrent();
+      } break;
+      case '2':{  //New dir menu
+        char inputStr[16];
+        stringInput(inputStr, "New dir name :");
+        if (inputStr[0] == 255) break;
+        inputStr[14] = 0;
+        workingDir.mkdir(workingDir, inputStr);
+        lcdoutput.printScreen("Created dir :", inputStr);
+        delay(1000);
+        
+        if (!file1.isValid()) file1 = workingDir.getChild();
+        printCurrent();
+      } break;
+      case '3':   //remove file
+      break;
+      case '4':{  //New executable menu
+        char inputStr[16];
+        stringInput(inputStr, "New exe name :");
+        if (inputStr[0] == 255) break;
+        inputStr[14] = 0;
+        workingDir.mkdir(workingDir, inputStr);
+        lcdoutput.printScreen("Created exe :", inputStr);
+        delay(1000);
+        
+        if (!file1.isValid()) file1 = workingDir.getChild();
+        printCurrent();
+      } break;
+      case '5':
+        char str[5];
+        str[4] = 0;
+        lcdoutput.printScreen("", "");
+        for (unsigned int i = 0; i < 24; i++) {
+          toString(str, i);
+          lcdoutput.printScreen(str, "");
+          char val = workingDir.readRawMem(i);
+          if (val > 32) lcdoutput.drawchar(val, 31);
+          else lcdoutput.drawchar(val + 48, 31);
+          delay(1000);
+        }
+        inMenu = 0;
+      break;
+      case '6':
+        lcdoutput.printScreen("Erasing Memory &", "Initializing");
+        workingDir.initfs(0);
+        inMenu = 0;
+      break;
     }
+    delay(10);
   }
 }
 
@@ -112,7 +170,7 @@ void stringInput(char *output, char *phrase) {
   TypeSession typesession;      //Create new input session
   char key = m16input.button(); //reset input key
   lcdoutput.printScreen(phrase, "");
-  while (key != 'D') {    //press 'D' to exit
+  while (key != 'D' && key != 'C') {    //press 'D' to continue, 'C' to cancel
     switch (key) {
       case 0: //no input : do nothing
       break;
@@ -122,8 +180,6 @@ void stringInput(char *output, char *phrase) {
       break;
       case 'B':
         typesession.nextChar();
-      break;
-      case 'C': //TODO : Cancel
       break;
       case '#': //Shift
         typesession.chgCase();
@@ -137,6 +193,9 @@ void stringInput(char *output, char *phrase) {
       break;
     }
     key = m16input.button();
+  }
+  if (key == 'C') {
+    output[0] = -128;
   }
   for (char i = 0; i < 16; i++) {
     output[i] = typesession.inputStr[i];
@@ -166,15 +225,6 @@ void loop() {
       controlMenu();
       printCurrent();
     break;
-    /*{ //New file menu
-      char inputStr[16];
-      stringInput(inputStr, "New file name :");
-      lcdoutput.printScreen("Creating file:", inputStr);
-      delay(2000);
-      printCurrent();
-    }
-    break;  */
-
 /*
     case '*':{ //Execute file
       if (!workingDir.isExecutable()) break;
@@ -254,7 +304,7 @@ void loop() {
 }
 
 
-void toString(char *output, char num) {//meant to help debug
+void toString(char *output, char num) {//debug
   if (num < 0) {
     output[0] = '-';
     num *= -1;

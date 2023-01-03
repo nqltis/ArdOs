@@ -18,6 +18,7 @@
 #define BLOCK_MAP_OFFSET 160  //Address of block map
 #define BLOCK_AREA_OFFSET 224  //Address of first data block
 #define MEMORY_SIZE 1024
+#define HEADER_SIZE 6
 #define HEADER_ID_TYPE unsigned char 
 #define HEADER_ID_SIZE 1
 #define ABS_ADDR_TYPE unsigned int//Size of absolute address (1024B -> int)
@@ -40,14 +41,20 @@ class File
     //char dataRemaining();
     //unsigned char read();
     void pathString(char *output);
+    void mkfile(File workingDir, char *name);
+    void mkdir(File workingDir, char *name);
+    unsigned char readRawMem(unsigned int pos);
   private:
     HEADER_ID_TYPE headerPtr;
     BLOCK_ID_TYPE block;  //Set when open
     unsigned char index;  //Set when open
+    HEADER_ID_TYPE getHeader();
     BLOCK_ID_TYPE getFirstBlock();
     BLOCK_ID_TYPE getFreeBlock();
+    HEADER_ID_TYPE getFreeHeader();
     void reserveBlock(BLOCK_ID_TYPE blockId);
     void freeBlock(BLOCK_ID_TYPE blockId);
+    void makefile(File workingDir, char *name, unsigned char flags);
 };
 
 #endif

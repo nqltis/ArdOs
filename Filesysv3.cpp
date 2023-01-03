@@ -5,6 +5,7 @@
   nqltis - 31/12/2022
 */
 
+#include <Arduino.h>
 #include <EEPROM.h>
 #include "ustrlib.h"
 #include "Filesysv3.h"
@@ -18,24 +19,30 @@ File::File(HEADER_ID_TYPE _headerPtr) {
 }
 
 void File::initfs(int offset) {
-  ABS_ADDR_TYPE _blockAddr = getFreeBlock();
+  for (unsigned int i = 0; i < MEMORY_SIZE; i++) {
+    EEPROM.update(i, 0);
+  }
+  ABS_ADDR_TYPE _blockAddr = BLOCK_AREA_OFFSET;
+  reserveBlock(0);
   unsigned char rootBlock[4] = {0, 0, '/', 0};  //Write file name in block
   for (char i = 0; i < 4; i++) {
     EEPROM.update(_blockAddr + i, rootBlock[i]);
   }
-  unsigned char rootHeader[5] = {0, 0, 0, 0, 0}; //Create header for root dir
-  rootHeader[0] = _blockAddr;
-  for (char i = 0; i < 5; i++) EEPROM.update(offset + i, rootHeader[i]);
+  for (unsigned int i = 0; i < BLOCK_MAP_OFFSET; i += 6) {
+    EEPROM.update(i, 0);  //Write 0 at every header start
+  }
+  unsigned char rootHeader[6] = {192, 0, 0, 0, 0, 0}; //Create header for root dir
+  for (char i = 0; i < 6; i++) EEPROM.update(offset + i, rootHeader[i]);
 }
 
 char File::isValid() {
-  return (EEPROM.read(headerPtr) != 255);
+  return (headerPtr != 255);
 }
 char File::isDir() {
-  return EEPROM.read(headerPtr) & 128;
+  return (EEPROM.read(headerPtr * HEADER_SIZE) & 64) && isValid();
 }
 char File::isExecutable() {
-  return EEPROM.read(headerPtr) & 64;
+  return (EEPROM.read(headerPtr * HEADER_SIZE) & 32) && isValid();
 }
 
 void File::getName(char *output) {
@@ -47,25 +54,29 @@ void File::getName(char *output) {
 }
 
 File File::getParent() {
-  unsigned char ptrOffset = BLOCK_ID_SIZE;
-  HEADER_ID_TYPE targetAddr = EEPROM.read(headerPtr + ptrOffset);
+  if (!isValid()) return File();
+  unsigned char ptrOffset = BLOCK_ID_SIZE + 1;
+  HEADER_ID_TYPE targetAddr = EEPROM.read(headerPtr * HEADER_SIZE + ptrOffset);
   return File(targetAddr);
 }
 File File::getChild() {
-  unsigned char ptrOffset = BLOCK_ID_SIZE + HEADER_ID_SIZE;
-  HEADER_ID_TYPE targetAddr = EEPROM.read(headerPtr + ptrOffset);
+  if (!isValid()) return File();
+  unsigned char ptrOffset = BLOCK_ID_SIZE + HEADER_ID_SIZE + 1;
+  HEADER_ID_TYPE targetAddr = EEPROM.read(headerPtr * HEADER_SIZE + ptrOffset);
   if (targetAddr != 0) return File(targetAddr);
   return File();
 }
 File File::getPrev() {
-  unsigned char ptrOffset = BLOCK_ID_SIZE + 2*HEADER_ID_SIZE;
-  HEADER_ID_TYPE targetAddr = EEPROM.read(headerPtr + ptrOffset);
+  if (!isValid()) return File();
+  unsigned char ptrOffset = BLOCK_ID_SIZE + 2*HEADER_ID_SIZE + 1;
+  HEADER_ID_TYPE targetAddr = EEPROM.read(headerPtr * HEADER_SIZE + ptrOffset);
   if (targetAddr != 0) return File(targetAddr);
   return File();
 }
 File File::getNext() {
-  unsigned char ptrOffset = BLOCK_ID_SIZE + 3*HEADER_ID_SIZE;
-  HEADER_ID_TYPE targetAddr = EEPROM.read(headerPtr + ptrOffset);
+  if (!isValid()) return File();
+  unsigned char ptrOffset = BLOCK_ID_SIZE + 3*HEADER_ID_SIZE + 1;
+  HEADER_ID_TYPE targetAddr = EEPROM.read(headerPtr * HEADER_SIZE + ptrOffset);
   if (targetAddr != 0) return File(targetAddr);
   return File();
 }
@@ -73,11 +84,12 @@ File File::getNext() {
 void File::pathString(char *output) { //Recursive function
   char str[BLOCK_SIZE - 1];
   getName(str);
-  if (strCompare(str, "/")) { //init
+  if (((str[0] == '/') && (str[1] == 0)) || !isValid()) { //init
     output[0] = '/';
     output[1] = 0;
     return;
   }
+  delay(100);
   File parent = getParent();
   parent.pathString(output);
   strConcat(str, "/");
@@ -85,8 +97,15 @@ void File::pathString(char *output) { //Recursive function
   return;
 }
 
+void File::mkfile(File workingDir, char *name) {
+  makefile(workingDir, name, 0);
+}
+void File::mkdir(File workingDir, char *name) {
+  makefile(workingDir, name, 64);
+}
+
 BLOCK_ID_TYPE File::getFirstBlock() {
-  return BLOCK_AREA_OFFSET + BLOCK_SIZE * EEPROM.read(headerPtr);
+  return BLOCK_AREA_OFFSET + BLOCK_SIZE * (EEPROM.read(headerPtr * HEADER_SIZE + 1));
 }
 BLOCK_ID_TYPE File::getFreeBlock() {
   for (ABS_ADDR_TYPE i = 0; i < BLOCK_AREA_OFFSET - BLOCK_MAP_OFFSET; i++) {
@@ -96,13 +115,57 @@ BLOCK_ID_TYPE File::getFreeBlock() {
     }
   } 
 }
+HEADER_ID_TYPE File::getFreeHeader() {
+  for (HEADER_ID_TYPE i = 0; i < (BLOCK_MAP_OFFSET/HEADER_SIZE); i++) {
+    if (!(EEPROM.read(i * HEADER_SIZE) & 128)) return i;
+  }
+  return 255; //Memory full
+}
 void File::reserveBlock(BLOCK_ID_TYPE blockId) {
   ABS_ADDR_TYPE targetByteAddr = blockId/8 + BLOCK_MAP_OFFSET;
   unsigned char targetByte = EEPROM.read(targetByteAddr);
   targetByte = targetByte | (1 << (blockId % 8));
+  EEPROM.update(targetByteAddr, targetByte);
 }
 void File::freeBlock(BLOCK_ID_TYPE blockId) {
   ABS_ADDR_TYPE targetByteAddr = blockId/8 + BLOCK_MAP_OFFSET;
   unsigned char targetByte = EEPROM.read(targetByteAddr);
   targetByte = targetByte & ~(1 << (blockId % 8));
+  EEPROM.update(targetByteAddr, targetByte);
+}
+void File::makefile(File workingDir, char *name, unsigned char flags) {
+  BLOCK_ID_TYPE newBlock = getFreeBlock();  //Find free block
+  reserveBlock(newBlock);
+  ABS_ADDR_TYPE blockOffset = newBlock * BLOCK_SIZE + BLOCK_AREA_OFFSET;
+  EEPROM.update(blockOffset++, 0);
+  EEPROM.update(blockOffset++, 0);
+  for (char i = 0; i < BLOCK_SIZE - 2*BLOCK_ID_SIZE; i++) { //Write name to block
+    EEPROM.update(blockOffset + i, name[i]);
+    if (!name[i]) break;
+  }
+  HEADER_ID_TYPE newHeader = getFreeHeader(); //Find free header
+  unsigned char fileHeader[6];
+  fileHeader[0] = 128 | flags;  //flags
+  fileHeader[1] = newBlock;     //first data block ID
+  fileHeader[2] = workingDir.headerPtr; //Parent dir header ID
+  fileHeader[3] = 0;                    //Child file header ID
+  File _file = workingDir.getChild();
+  if (!_file.isValid()) {
+    EEPROM.update(workingDir.headerPtr * HEADER_SIZE + BLOCK_ID_SIZE + HEADER_ID_SIZE + 1, newHeader);
+    fileHeader[4] = 0;
+  } else {
+    while (_file.isValid()) { //Get last file of working dir
+      _file = _file.getNext();
+    }
+    EEPROM.update(_file.headerPtr * HEADER_SIZE + BLOCK_ID_SIZE + 3*HEADER_ID_SIZE + 1, newHeader); //Set as next file of found file
+    fileHeader[4] = _file.headerPtr;    //Previous file header ID
+  }
+  fileHeader[5] = 0;                    //Next file header ID
+  for (char i = 0; i < 6; i++) {  //Copy prepared file header to memory
+    EEPROM.update(newHeader * HEADER_SIZE + i, fileHeader[i]);
+  }
+}
+
+unsigned char File::readRawMem(unsigned int pos) {
+  return EEPROM.read(pos);
 }
