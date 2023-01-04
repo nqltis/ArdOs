@@ -46,7 +46,7 @@ char File::isExecutable() {
 }
 
 void File::getName(char *output) {
-  unsigned int offset = getFirstBlock() + 2*BLOCK_ID_SIZE;
+  unsigned int offset = BLOCK_AREA_OFFSET + BLOCK_SIZE * getFirstBlock() + 2*BLOCK_ID_SIZE;
   for (unsigned char i = 0; i < BLOCK_SIZE - 2*BLOCK_ID_SIZE; i++) {
     output[i] = EEPROM.read(i + offset);
     if (output[i] == 0) break;
@@ -81,6 +81,24 @@ File File::getNext() {
   return File();
 }
 
+void File::open() {
+  if (isDir()) return;
+  block = getFirstBlock();//init
+  char i;
+  for (i = 0, i < BLOCK_SIZE - 2*BLOCK_ID_SIZE, i++) {
+    if (!EEPROM.read(i)) break;
+  }
+  index = i;
+  if (index == BLOCK_SIZE - 2*BLOCK_ID_SIZE - 1) {  //if at end of block
+    block = block * BLOCK_SIZE + 1 + BLOCK_AREA_OFFSET; //Jump to next block
+  }
+  return;
+}
+
+char File::dataRemaining() {
+  return block;
+}
+
 void File::pathString(char *output) { //Recursive function
   char str[BLOCK_SIZE - 1];
   getName(str);
@@ -89,7 +107,6 @@ void File::pathString(char *output) { //Recursive function
     output[1] = 0;
     return;
   }
-  delay(100);
   File parent = getParent();
   parent.pathString(output);
   strConcat(str, "/");
@@ -107,8 +124,8 @@ void File::mkexe(File workingDir, char *name) {
   makefile(workingDir, name, 32);
 }
 
-ABS_ADDR_TYPE File::getFirstBlock() {
-  return BLOCK_AREA_OFFSET + BLOCK_SIZE * (EEPROM.read(headerPtr * HEADER_SIZE + 1));
+BLOCK_ID_TYPE File::getFirstBlock() {
+  return (EEPROM.read(headerPtr * HEADER_SIZE + 1));
 }
 BLOCK_ID_TYPE File::getFreeBlock() {
   for (ABS_ADDR_TYPE i = 0; i < BLOCK_AREA_OFFSET - BLOCK_MAP_OFFSET; i++) {

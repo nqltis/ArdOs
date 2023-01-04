@@ -37,14 +37,14 @@ class File
     File getChild();
     File getPrev();
     File getNext();
-    //void open();
-    //char dataRemaining();
+    void open();
+    char dataRemaining();
     //unsigned char read();
     void pathString(char *output);
     void mkfile(File workingDir, char *name);
     void mkdir(File workingDir, char *name);
     void mkexe(File workingDir, char *name);
-    unsigned char readRawMem(unsigned int pos);
+    unsigned char readRawMem(unsigned int pos);//debug
   private:
     HEADER_ID_TYPE headerPtr;
     BLOCK_ID_TYPE block;  //Set when open

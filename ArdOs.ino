@@ -102,6 +102,7 @@ void controlMenu() {
         else lcdoutput.printScreen("4:mkex 5:dbg  /`", "6:initfs");
       break;
       case 'C':
+      case 'D':
         inMenu = 0;
       break;
       case '1':{  //New file menu
