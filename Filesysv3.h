@@ -44,13 +44,14 @@ class File
     void mkfile(File workingDir, char *name);
     void mkdir(File workingDir, char *name);
     void mkexe(File workingDir, char *name);
+    unsigned char read();
     unsigned char readRawMem(unsigned int pos);//debug
   private:
     HEADER_ID_TYPE headerPtr;
     BLOCK_ID_TYPE block;  //Set when open
     unsigned char index;  //Set when open
     HEADER_ID_TYPE getHeader();
-    ABS_ADDR_TYPE getFirstBlock();
+    BLOCK_ID_TYPE getFirstBlock();
     BLOCK_ID_TYPE getFreeBlock();
     HEADER_ID_TYPE getFreeHeader();
     void reserveBlock(BLOCK_ID_TYPE blockId);

@@ -85,21 +85,32 @@ void File::open() {
   if (isDir()) return;
   block = getFirstBlock();//init
   char i;
-  for (i = 0, i < BLOCK_SIZE - 2*BLOCK_ID_SIZE, i++) {
-    if (!EEPROM.read(i)) break;
+  for (i = 2*BLOCK_ID_SIZE; i < BLOCK_SIZE; i++) {  //skip file name
+    if (!EEPROM.read(block * BLOCK_SIZE + i + BLOCK_AREA_OFFSET)) {i++; break;}
   }
   index = i;
   if (index == BLOCK_SIZE - 2*BLOCK_ID_SIZE - 1) {  //if at end of block
-    block = block * BLOCK_SIZE + 1 + BLOCK_AREA_OFFSET; //Jump to next block
+    block = EEPROM.read(block * BLOCK_SIZE + BLOCK_ID_SIZE + BLOCK_AREA_OFFSET); //Jump to next block
+    index = 2*BLOCK_ID_SIZE;
   }
   return;
 }
 
-char File::dataRemaining() {
+char File::dataRemaining() {  //Return True if still in a block containing data
   return block;
 }
 
-void File::pathString(char *output) { //Recursive function
+unsigned char File::read() {  //Read next byte of open file
+  index++;
+  if (index == BLOCK_SIZE) {  //if at end of block
+    block = EEPROM.read(block * BLOCK_SIZE + BLOCK_ID_SIZE + BLOCK_AREA_OFFSET); //Jump to next block
+    index = 2*BLOCK_ID_SIZE;
+  }
+  if (dataRemaining()) return EEPROM.read(index);
+  else return 0;
+}
+
+void File::pathString(char *output) { //Recursive function to get path of given file
   char str[BLOCK_SIZE - 1];
   getName(str);
   if (((str[0] == '/') && (str[1] == 0)) || !isValid()) { //init
@@ -124,10 +135,10 @@ void File::mkexe(File workingDir, char *name) {
   makefile(workingDir, name, 32);
 }
 
-BLOCK_ID_TYPE File::getFirstBlock() {
+BLOCK_ID_TYPE File::getFirstBlock() { //Get first data block of given file
   return (EEPROM.read(headerPtr * HEADER_SIZE + 1));
 }
-BLOCK_ID_TYPE File::getFreeBlock() {
+BLOCK_ID_TYPE File::getFreeBlock() {  //Get unused data block ID
   for (ABS_ADDR_TYPE i = 0; i < BLOCK_AREA_OFFSET - BLOCK_MAP_OFFSET; i++) {
     unsigned char _byte = EEPROM.read(i + BLOCK_MAP_OFFSET);
     for (char j = 0; j < 8; j++) {
@@ -135,25 +146,25 @@ BLOCK_ID_TYPE File::getFreeBlock() {
     }
   } 
 }
-HEADER_ID_TYPE File::getFreeHeader() {
+HEADER_ID_TYPE File::getFreeHeader() {  //Get unused file header ID
   for (HEADER_ID_TYPE i = 0; i < (BLOCK_MAP_OFFSET/HEADER_SIZE); i++) {
     if (!(EEPROM.read(i * HEADER_SIZE) & 128)) return i;
   }
   return 255; //Memory full
 }
-void File::reserveBlock(BLOCK_ID_TYPE blockId) {
+void File::reserveBlock(BLOCK_ID_TYPE blockId) {  //Mark block as owned by an existing file
   ABS_ADDR_TYPE targetByteAddr = blockId/8 + BLOCK_MAP_OFFSET;
   unsigned char targetByte = EEPROM.read(targetByteAddr);
   targetByte = targetByte | (1 << (blockId % 8));
   EEPROM.update(targetByteAddr, targetByte);
 }
-void File::freeBlock(BLOCK_ID_TYPE blockId) {
+void File::freeBlock(BLOCK_ID_TYPE blockId) { //Mark block as unused
   ABS_ADDR_TYPE targetByteAddr = blockId/8 + BLOCK_MAP_OFFSET;
   unsigned char targetByte = EEPROM.read(targetByteAddr);
   targetByte = targetByte & ~(1 << (blockId % 8));
   EEPROM.update(targetByteAddr, targetByte);
 }
-void File::makefile(File workingDir, char *name, unsigned char flags) {
+void File::makefile(File workingDir, char *name, unsigned char flags) { //Generic file creator
   BLOCK_ID_TYPE newBlock = getFreeBlock();  //Find free block
   reserveBlock(newBlock);
   ABS_ADDR_TYPE blockOffset = newBlock * BLOCK_SIZE + BLOCK_AREA_OFFSET;
@@ -186,6 +197,6 @@ void File::makefile(File workingDir, char *name, unsigned char flags) {
   }
 }
 
-unsigned char File::readRawMem(unsigned int pos) {
+unsigned char File::readRawMem(unsigned int pos) {  //Debug : Read byte of memory at given address
   return EEPROM.read(pos);
 }
