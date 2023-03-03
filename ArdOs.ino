@@ -20,7 +20,6 @@ const byte DataPin[8] = {
 LCDoutput lcdoutput(RS, RW, E, DataPin);
 
 File workingDir(0);  //root
-File shadowFile;
 File file1;
 File file2;
 
@@ -242,7 +241,7 @@ void loop() {
       controlMenu();
       printCurrent();
     break;
-/*
+/*          //Commented out to change file system and implement code execution progressively
     case '*':{ //Execute file
       if (!workingDir.isExecutable()) break;
       workingDir.open();
