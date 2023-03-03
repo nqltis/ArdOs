@@ -19,7 +19,7 @@ File::File(HEADER_ID_TYPE _headerPtr) {
 }
 
 void File::initfs(int offset) {
-  for (unsigned int i = 0; i < MEMORY_SIZE; i++) {
+  for (unsigned int i = 0; i < MEMORY_SIZE; i++) {  //Write 0 in EEPROM
     EEPROM.update(i, 0);
   }
   ABS_ADDR_TYPE _blockAddr = BLOCK_AREA_OFFSET;
@@ -106,8 +106,33 @@ unsigned char File::read() {  //Read next byte of open file
     block = EEPROM.read(block * BLOCK_SIZE + BLOCK_ID_SIZE + BLOCK_AREA_OFFSET); //Jump to next block
     index = 2*BLOCK_ID_SIZE;
   }
-  if (dataRemaining()) return EEPROM.read(index);
+  if (dataRemaining()) return EEPROM.read(block * BLOCK_SIZE + BLOCK_AREA_OFFSET + index);
   else return 0;
+}
+
+void File::write(unsigned char data) {
+  index++;
+  if (index == BLOCK_SIZE) {  //if at end of block
+    // BLOCK_ID_TYPE newBlockId = block * BLOCK_SIZE + BLOCK_ID_SIZE + BLOCK_AREA_OFFSET;
+    // if (newBlockId) {  //if next block is valid, continue on that block
+    //   block = newBlockId;
+    //   index = 2*BLOCK_ID_SIZE;
+    // } else {
+    BLOCK_ID_TYPE newBlockId = getFreeBlock();  //try to get a new free block
+    if (newBlockId) {  //if free block available, reserve that block
+      reserveBlock(newBlockId);
+      block = newBlockId;
+      index = 2*BLOCK_ID_SIZE;
+    } else {  //else return 0
+      return 0;
+    }
+    //}
+  }
+  if (dataRemaining()) {
+    EEPROM.write(BLOCK_AREA_OFFSET + block * BLOCK_SIZE + index, data);
+    return 1; //Success
+  }
+  return 0;
 }
 
 void File::pathString(char *output) { //Recursive function to get path of given file
@@ -145,6 +170,7 @@ BLOCK_ID_TYPE File::getFreeBlock() {  //Get unused data block ID
       if (!(_byte & (1 << j))) return i * 8 + j;
     }
   } 
+  return 0; //if no free block, return 0
 }
 HEADER_ID_TYPE File::getFreeHeader() {  //Get unused file header ID
   for (HEADER_ID_TYPE i = 0; i < (BLOCK_MAP_OFFSET/HEADER_SIZE); i++) {

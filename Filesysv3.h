@@ -45,6 +45,7 @@ class File
     void mkdir(File workingDir, char *name);
     void mkexe(File workingDir, char *name);
     unsigned char read();
+    void write(unsigned char data);
     unsigned char readRawMem(unsigned int pos);//debug
   private:
     HEADER_ID_TYPE headerPtr;
