@@ -19,18 +19,16 @@ File::File(HEADER_ID_TYPE _headerPtr) {
 }
 
 void File::initfs(int offset) {
-  for (unsigned int i = 0; i < MEMORY_SIZE; i++) {  //Write 0 in EEPROM
+  for (unsigned int i = BLOCK_MAP_OFFSET; i < BLOCK_AREA_OFFSET; i++) {  //Reset block map
     EEPROM.update(i, 0);
   }
-  ABS_ADDR_TYPE _blockAddr = BLOCK_AREA_OFFSET;
-  reserveBlock(0);
+  for (unsigned int i = 0; i < BLOCK_MAP_OFFSET; i += 6) {  //Reset every header start
+    EEPROM.update(i, 0);
+  }
+  
+  reserveBlock(0);                              //Reserve first block for root dir
   unsigned char rootBlock[4] = {0, 0, '/', 0};  //Write file name in block
-  for (char i = 0; i < 4; i++) {
-    EEPROM.update(_blockAddr + i, rootBlock[i]);
-  }
-  for (unsigned int i = 0; i < BLOCK_MAP_OFFSET; i += 6) {
-    EEPROM.update(i, 0);  //Write 0 at every header start
-  }
+  for (char i = 0; i < 4; i++) EEPROM.update(BLOCK_AREA_OFFSET + i, rootBlock[i]);
   unsigned char rootHeader[6] = {192, 0, 0, 0, 0, 0}; //Create header for root dir
   for (char i = 0; i < 6; i++) EEPROM.update(offset + i, rootHeader[i]);
 }
