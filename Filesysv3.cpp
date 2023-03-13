@@ -133,6 +133,20 @@ void File::write(unsigned char data) {
   return 0;
 }
 
+char File::rewind() { //rewind data index of open file
+  if (index == 2*BLOCK_ID_SIZE) { //if at start of a block, jump to previous block
+    BLOCK_ID_TYPE previousBlockId = EEPROM.read(BLOCK_AREA_OFFSET + block * BLOCK_SIZE);
+    if (previousBlockId) {  //if block valid, jump
+      block = previousBlockId;
+      index = BLOCK_SIZE - 1;
+    } else {  //else, return 0
+      return 0;
+    } 
+  } else {
+    index--;
+  }
+}
+
 void File::pathString(char *output) { //Recursive function to get path of given file
   char str[BLOCK_SIZE - 1];
   getName(str);
