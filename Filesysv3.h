@@ -10,13 +10,12 @@
 
 #include <EEPROM.h>
 #include "ustrlib.h"
-
 #define BLOCK_SIZE 16
 #define BLOCK_ID_TYPE unsigned char
 #define BLOCK_ID_SIZE 1   //Number of bytes of BLOCK_ID_TYPE
 #define INDEX_TYPE char
-#define BLOCK_MAP_OFFSET 160  //Address of block map
-#define BLOCK_AREA_OFFSET 224  //Address of first data block
+#define BLOCK_MAP_OFFSET 120  //Address of block map (20 file headers)
+#define BLOCK_AREA_OFFSET 128  //Address of first data block (56 blocks)
 #define MEMORY_SIZE 1024
 #define HEADER_SIZE 6
 #define HEADER_ID_TYPE unsigned char 
