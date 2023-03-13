@@ -363,6 +363,8 @@ void editFile(File file) {
       default:
       break;
     }
+    lcdoutput.printScreen(buff1, buff2);
+    delay(1);
   }
 }
 
