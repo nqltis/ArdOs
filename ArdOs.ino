@@ -88,6 +88,7 @@ void selectNextDir() {
   workingDir = file1;
   file1 = workingDir.getChild();
   file2 = File();
+
 }
 void controlMenu() {
   lcdoutput.printScreen("1:mkf 2:mkd 3:rm", "4:mkex 5:dbg  `/");
@@ -233,7 +234,8 @@ void loop() {
       printCurrent();
     break;
     case 'D':
-      selectNextDir();
+      if (file1.isDir()) selectNextDir(); //if dir, enter, else, edit file
+      else editFile(file1);
       printCurrent();
     break;
 
@@ -319,6 +321,50 @@ void loop() {
   delay(10);
 }
 
+void editFile(File file) {
+  file.open();
+  toString(buff1, file.read());
+  toString(buff2, file.read());
+  lcdoutput.printScreen(buff1, buff2);
+  unsigned char screenCursor = 0;
+  lcdoutput.drawchar('<', 5);
+  char key = m16input.button(); //reset input key
+  while (key != 'C') {
+    key = m16input.button();
+    switch (key) {
+      case 'A': //Scroll up
+        if (screenCursor) {
+          screenCursor = 0;
+          lcdoutput.drawchar('<', 5);
+          lcdoutput.drawchar(' ', 21);
+        } else {
+          strCopy(buff2, buff1);
+          file.rewind();
+          if (file.rewind()) {
+            toString(buff1, file.read());
+          }
+        }
+      break;
+      case 'B': //Scroll down
+        if (screenCursor) {
+          unsigned char newChar = file.read();
+          if (newChar) {
+            strCopy(buff1, buff2);
+            toString(buff2, newChar);
+          }
+        } else {
+          screenCursor = 1;
+          lcdoutput.drawchar(' ', 5);
+          lcdoutput.drawchar('<', 21);
+        }
+      break;
+      case 'C': //Exit file
+      break;
+      default:
+      break;
+    }
+  }
+}
 
 void toString(char *output, int num) {//debug
   if (num < 0) {
