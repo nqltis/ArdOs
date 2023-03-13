@@ -46,6 +46,7 @@ class File
     unsigned char read();
     void write(unsigned char data);
     char rewind();
+    char skip();
     unsigned char readRawMem(unsigned int pos);//debug
   private:
     HEADER_ID_TYPE headerPtr;

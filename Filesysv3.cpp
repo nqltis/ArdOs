@@ -147,6 +147,20 @@ char File::rewind() { //rewind data index of open file
   }
 }
 
+char File::skip() {
+  if (index == BLOCK_ID_SIZE - 1) { //if at end of a block, jump to next block
+    BLOCK_ID_TYPE nextBlockId = EEPROM.read(BLOCK_AREA_OFFSET + block * BLOCK_SIZE + BLOCK_ID_SIZE);
+    if (nextBlockId) {  //if block valid, jump
+      block = nextBlockId;
+      index = BLOCK_ID_SIZE * 2;
+    } else {  //else, return 0
+      return 0;
+    } 
+  } else {
+    index++;
+  }
+}
+
 void File::pathString(char *output) { //Recursive function to get path of given file
   char str[BLOCK_SIZE - 1];
   getName(str);
