@@ -87,7 +87,7 @@ void File::open() {
     if (!EEPROM.read(block * BLOCK_SIZE + i + BLOCK_AREA_OFFSET)) {i++; break;}
   }
   index = i;
-  if (index == BLOCK_SIZE - 2*BLOCK_ID_SIZE - 1) {  //if at end of block
+  if (index == BLOCK_SIZE - 1) {  //if at end of block
     block = EEPROM.read(block * BLOCK_SIZE + BLOCK_ID_SIZE + BLOCK_AREA_OFFSET); //Jump to next block
     index = 2*BLOCK_ID_SIZE;
   }
@@ -145,6 +145,7 @@ char File::rewind() { //rewind data index of open file
   } else {
     index--;
   }
+  return 1;
 }
 
 char File::skip() {
@@ -159,6 +160,7 @@ char File::skip() {
   } else {
     index++;
   }
+  return 1;
 }
 
 void File::pathString(char *output) { //Recursive function to get path of given file
