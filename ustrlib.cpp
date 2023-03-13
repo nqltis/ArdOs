@@ -43,3 +43,12 @@ void strConcat(char *output, char *str2) {
   output[j] = 0;
   return;
 }
+
+void strCopy(char *output, char *input) {
+  int i = 0;
+  while(input[i]) {
+    output[i] = input[i];
+    i++;
+  }
+  output[i] = input[i];
+}

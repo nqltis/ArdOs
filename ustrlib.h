@@ -10,5 +10,6 @@
 int strCompare(char *str1, char *str2);
 int strSplit(char *buff, char *str, int index);
 void strConcat(char *output, char *str2);
+void strCopy(char *output, char *input);
 
 #endif
