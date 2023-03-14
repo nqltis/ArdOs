@@ -335,16 +335,16 @@ void editFile(File file) {
       case 'A': //Scroll up
         if (screenCursor) {
           screenCursor = 0;
-          lcdoutput.drawchar('<', 5);
-          lcdoutput.drawchar(' ', 21);
         } else {
           file.rewind();
           if (file.rewind()) {
             strCopy(buff2, buff1);
             toString(buff1, file.read());
+            lcdoutput.printScreen(buff1, buff2);
           }
         }
-        lcdoutput.printScreen(buff1, buff2);
+        lcdoutput.drawchar('<', 5);
+        lcdoutput.drawchar(' ', 21);
       break;
       case 'B': //Scroll down
         if (screenCursor) {
@@ -352,13 +352,13 @@ void editFile(File file) {
           if (newChar) {
             strCopy(buff1, buff2);
             toString(buff2, newChar);
+            lcdoutput.printScreen(buff1, buff2);
           }
         } else {
           screenCursor = 1;
-          lcdoutput.drawchar(' ', 5);
-          lcdoutput.drawchar('<', 21);
         }
-        lcdoutput.printScreen(buff1, buff2);
+        lcdoutput.drawchar(' ', 5);
+        lcdoutput.drawchar('<', 21);
       break;
       case 'C': //Exit file
       break;
