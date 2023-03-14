@@ -338,9 +338,9 @@ void editFile(File file) {
           lcdoutput.drawchar('<', 5);
           lcdoutput.drawchar(' ', 21);
         } else {
-          strCopy(buff2, buff1);
           file.rewind();
           if (file.rewind()) {
+            strCopy(buff2, buff1);
             toString(buff1, file.read());
           }
         }
