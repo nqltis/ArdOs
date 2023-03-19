@@ -325,6 +325,7 @@ void editFile(File file) {
   file.open();
   toString(buff1, file.read());
   toString(buff2, file.read());
+  file.rewind();
   lcdoutput.printScreen(buff1, buff2);
   unsigned char screenCursor = 0;
   lcdoutput.drawchar('<', 5);
@@ -335,25 +336,22 @@ void editFile(File file) {
       case 'A': //Scroll up
         if (screenCursor) {
           screenCursor = 0;
-        } else {
+        } else if (file.rewind()) {
           file.rewind();
-          if (file.rewind()) {
-            strCopy(buff2, buff1);
-            toString(buff1, file.read());
-            lcdoutput.printScreen(buff1, buff2);
-          }
-        }
+          toString(buff1, file.read());
+          toString(buff2, file.read());
+          file.rewind();
+          lcdoutput.printScreen(buff1, buff2);
+        } else file.read();
         lcdoutput.drawchar('<', 5);
         lcdoutput.drawchar(' ', 21);
       break;
       case 'B': //Scroll down
         if (screenCursor) {
-          unsigned char newChar = file.read();
-          if (newChar) {
-            strCopy(buff1, buff2);
-            toString(buff2, newChar);
-            lcdoutput.printScreen(buff1, buff2);
-          }
+          toString(buff1, file.read());
+          toString(buff2, file.read());
+          file.rewind();
+          lcdoutput.printScreen(buff1, buff2);
         } else {
           screenCursor = 1;
         }
