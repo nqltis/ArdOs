@@ -94,18 +94,17 @@ void File::open() {
   return;
 }
 
-char File::dataRemaining() {  //Return True if still in a block containing data
-  return block;
-}
-
 unsigned char File::read() {  //Read next byte of open file
-  index++;
+  unsigned char byte;
+  if (block) byte = EEPROM.read(block * BLOCK_SIZE + BLOCK_AREA_OFFSET + index);
+  else byte = 0;
   if (index == BLOCK_SIZE) {  //if at end of block
     block = EEPROM.read(block * BLOCK_SIZE + BLOCK_ID_SIZE + BLOCK_AREA_OFFSET); //Jump to next block
     index = 2*BLOCK_ID_SIZE;
+  } else {
+    index++;
   }
-  if (dataRemaining()) return EEPROM.read(block * BLOCK_SIZE + BLOCK_AREA_OFFSET + index);
-  else return 0;
+  return byte;
 }
 
 void File::write(unsigned char data) {
@@ -126,7 +125,7 @@ void File::write(unsigned char data) {
     }
     //}
   }
-  if (dataRemaining()) {
+  if (block) { //TODO: Reimplement verification of remaining memory
     EEPROM.write(BLOCK_AREA_OFFSET + block * BLOCK_SIZE + index, data);
     return 1; //Success
   }
