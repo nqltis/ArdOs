@@ -203,6 +203,8 @@ void stringInput(char *output, char *phrase) {
         lcdoutput.printScreen(phrase, typesession.inputStr);
       break;
       case '*':
+        typesession.numLock();
+        lcdoutput.printScreen(phrase, typesession.inputStr);
       break;
       default:
         typesession.enterKey(key);
@@ -360,6 +362,14 @@ void editFile(File file) {
       break;
       case 'C': //Exit file
       break;
+      case 'D': //Enter new value
+        stringInput(buff2, buff1);  //Get user input
+        file.write(toNumber(buff2));  //Write input to memory
+        file.rewind();      //Read freshly written byte
+        toString(buff2, file.read());
+        file.rewind();
+        lcdoutput.printScreen(buff1, buff2);  //Refresh display
+      break;
       default:
       break;
     }
@@ -367,7 +377,7 @@ void editFile(File file) {
   }
 }
 
-void toString(char *output, int num) {//debug
+void toString(char *output, int num) {
   if (num < 0) {
     output[0] = '-';
     num *= -1;
@@ -379,4 +389,16 @@ void toString(char *output, int num) {//debug
   output[2] = (num / 10) + 48;
   num %= 10;
   output[3] = num + 48;
+}
+
+unsigned char toNumber(char *input) {
+  unsigned char i = 0;
+  unsigned char j = 0;
+  unsigned char pow = 100;
+  while (input[j] >= 48 && input[j] < 58 && j < 3) {
+    i += (input[j] - 48) * pow;
+    pow /= 10;
+    j++;
+  }
+  return i;
 }
