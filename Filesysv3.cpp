@@ -108,28 +108,25 @@ unsigned char File::read() {  //Read next byte of open file
 }
 
 void File::write(unsigned char data) {
-  index++;
-  if (index == BLOCK_SIZE) {  //if at end of block
-    // BLOCK_ID_TYPE newBlockId = block * BLOCK_SIZE + BLOCK_ID_SIZE + BLOCK_AREA_OFFSET;
-    // if (newBlockId) {  //if next block is valid, continue on that block
-    //   block = newBlockId;
-    //   index = 2*BLOCK_ID_SIZE;
-    // } else {
-    BLOCK_ID_TYPE newBlockId = getFreeBlock();  //try to get a new free block
-    if (newBlockId) {  //if free block available, reserve that block
-      reserveBlock(newBlockId);
-      block = newBlockId;
-      index = 2*BLOCK_ID_SIZE;
-    } else {  //else return 0
-      return 0;
-    }
-    //}
-  }
   if (block) { //TODO: Reimplement verification of remaining memory
     EEPROM.write(BLOCK_AREA_OFFSET + block * BLOCK_SIZE + index, data);
-    return 1; //Success
   }
-  return 0;
+  if (index == BLOCK_SIZE) {  //if at end of block
+    BLOCK_ID_TYPE nextBlockId = BLOCK_AREA_OFFSET + block * BLOCK_SIZE + BLOCK_ID_SIZE; //go to next block
+    if (nextBlockId) {  //if next block is valid, continue on that block
+      block = nextBlockId;
+      index = 2*BLOCK_ID_SIZE;
+    } else {  //else allocate a new block
+      BLOCK_ID_TYPE nextBlockId = getFreeBlock();  //try to get a new free block
+      if (nextBlockId) {  //if free block available, reserve that block
+        reserveBlock(nextBlockId);
+        block = nextBlockId;
+        index = 2*BLOCK_ID_SIZE;
+      }
+    }
+  } else {
+    index++;
+  }
 }
 
 char File::rewind() { //rewind data index of open file
