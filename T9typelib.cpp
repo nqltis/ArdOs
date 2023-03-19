@@ -6,6 +6,32 @@
 
 #include "T9typelib.h"
 
+const char mapping[10][5] = {
+    {',', '.', '!', '?', 0},  //0 : ,.!?
+    {' ', '-', '_', '/', 0},  //1 :  -_/
+    { 'a', 'b', 'c', 0, 0},   //2 : abc
+    { 'd', 'e', 'f', 0, 0},   //3 : def
+    { 'g', 'h', 'i', 0, 0},   //.....
+    { 'j', 'k', 'l', 0, 0},
+    { 'm', 'n', 'o', 0, 0},
+    { 'p', 'q', 'r', 's', 0},
+    { 't', 'u', 'v', 0, 0},
+    { 'w', 'x', 'y', 'z', 0}
+  };
+const char majmapping[10][5] = {
+  {',', '.', '!', '?', 0},  //0 : ,.!?
+  {' ', '-', '_', '/', 0},  //1 :  -_/
+  { 'A', 'B', 'C', 0, 0},   //2 : abc
+  { 'D', 'E', 'F', 0, 0},   //3 : def
+  { 'G', 'H', 'I', 0, 0},   //.....
+  { 'J', 'K', 'L', 0, 0},
+  { 'M', 'N', 'O', 0, 0},
+  { 'P', 'Q', 'R', 'S', 0},
+  { 'T', 'U', 'V', 0, 0},
+  { 'W', 'X', 'Y', 'Z', 0}
+};
+  
+
 TypeSession::TypeSession() {  //each time a string input is needed, a new session must be created
   inputStr[0] = 0;
   _index = -1;
@@ -30,18 +56,6 @@ int TypeSession::keyToNum(char key) {
 }
 
 void TypeSession::enterKey(char key) {
-  const char mapping[10][5] = {
-    {',', '.', '!', '?', 0},  //0 : ,.!?
-    {' ', '-', '_', '/', 0},  //1 :  -_/
-    { 'a', 'b', 'c', 0, 0},   //2 : abc
-    { 'd', 'e', 'f', 0, 0},   //3 : def
-    { 'g', 'h', 'i', 0, 0},   //.....
-    { 'j', 'k', 'l', 0, 0},
-    { 'm', 'n', 'o', 0, 0},
-    { 'p', 'q', 'r', 's', 0},
-    { 't', 'u', 'v', 0, 0},
-    { 'w', 'x', 'y', 'z', 0}
-  };
   if (key != _activeKey) {    //if new key:
     if (_index >= 15) return; //if buffer full, do nothing
     _activeKey = key; 
@@ -60,36 +74,11 @@ void TypeSession::enterKey(char key) {
 }
 
 void TypeSession::chgCase() {
-  const char mapping[10][5] = {
-    {',', '.', '!', '?', 0},  //0 : ,.!?
-    {' ', '-', '_', '/', 0},  //1 :  -_/
-    { 'a', 'b', 'c', 0, 0},   //2 : abc
-    { 'd', 'e', 'f', 0, 0},   //3 : def
-    { 'g', 'h', 'i', 0, 0},   //.....
-    { 'j', 'k', 'l', 0, 0},
-    { 'm', 'n', 'o', 0, 0},
-    { 'p', 'q', 'r', 's', 0},
-    { 't', 'u', 'v', 0, 0},
-    { 'w', 'x', 'y', 'z', 0}
-  };
-  const char majmapping[10][5] = {
-    {',', '.', '!', '?', 0},  //0 : ,.!?
-    {' ', '-', '_', '/', 0},  //1 :  -_/
-    { 'A', 'B', 'C', 0, 0},   //2 : abc
-    { 'D', 'E', 'F', 0, 0},   //3 : def
-    { 'G', 'H', 'I', 0, 0},   //.....
-    { 'J', 'K', 'L', 0, 0},
-    { 'M', 'N', 'O', 0, 0},
-    { 'P', 'Q', 'R', 'S', 0},
-    { 'T', 'U', 'V', 0, 0},
-    { 'W', 'X', 'Y', 'Z', 0}
-  };
   if (mapping[keyToNum(_activeKey)][_cycleStep] == inputStr[_index]) {
     inputStr[_index] = majmapping[keyToNum(_activeKey)][_cycleStep];
   } else {
     inputStr[_index] = mapping[keyToNum(_activeKey)][_cycleStep];
   }
-
 }
 
 void TypeSession::nextChar() {
