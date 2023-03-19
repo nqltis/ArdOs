@@ -15,10 +15,12 @@ class TypeSession {
     void nextChar();
     char inputStr[17];
     void chgCase();
+    void numLock();
   private:
     int _index;
     char _activeKey;
     char _cycleStep;
+    char _numLock;
     int keyToNum(char key);
 };
 

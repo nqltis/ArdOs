@@ -30,13 +30,16 @@ const char majmapping[10][5] = {
   { 'T', 'U', 'V', 0, 0},
   { 'W', 'X', 'Y', 'Z', 0}
 };
-  
+const char nummapping[10] = {
+  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+};
 
 TypeSession::TypeSession() {  //each time a string input is needed, a new session must be created
   inputStr[0] = 0;
   _index = -1;
   _activeKey = 0; 
   _cycleStep = 0;
+  _numLock = 0;
 }
 
 int TypeSession::keyToNum(char key) {
@@ -61,7 +64,11 @@ void TypeSession::enterKey(char key) {
     _activeKey = key; 
     _index++;         //go next slot
     _cycleStep = 0;   //reset cycling
-    inputStr[_index] = mapping[keyToNum(key)][0]; //print corresponding char
+    if (_numLock) {
+      inputStr[_index] = nummapping[keyToNum(key)];
+    } else {
+      inputStr[_index] = mapping[keyToNum(key)][0]; //print corresponding char
+    }
     inputStr[_index + 1] = 0;   //Complete string with null char
   } else {    //same key, cycle through keys
     //_activeKey : same
@@ -74,11 +81,22 @@ void TypeSession::enterKey(char key) {
 }
 
 void TypeSession::chgCase() {
-  if (mapping[keyToNum(_activeKey)][_cycleStep] == inputStr[_index]) {
-    inputStr[_index] = majmapping[keyToNum(_activeKey)][_cycleStep];
-  } else {
-    inputStr[_index] = mapping[keyToNum(_activeKey)][_cycleStep];
+  if (_numLock) {
+    if (mapping[keyToNum(_activeKey)][_cycleStep] == inputStr[_index]) {
+      inputStr[_index] = majmapping[keyToNum(_activeKey)][_cycleStep];
+    } else {
+      inputStr[_index] = mapping[keyToNum(_activeKey)][_cycleStep];
+    }
   }
+}
+
+void TypeSession::numLock() {
+  if (_numLock) {
+    inputStr[_index] = mapping[keyToNum(_activeKey)][_cycleStep]; //print corresponding char
+  } else {
+    inputStr[_index] = nummapping[keyToNum(_activeKey)];
+  }
+  _numLock = !_numLock;
 }
 
 void TypeSession::nextChar() {
