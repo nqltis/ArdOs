@@ -255,7 +255,7 @@ void loop() {
         char progbyte = workingDir.read();
         char callcode = thread.execute(progbyte); */
         /* debug  
-        char text[4];
+        char text[5];
         toString(text, progbyte);
         lcdoutput.drawchar(text[0], 28);
         lcdoutput.drawchar(text[1], 29);
@@ -389,6 +389,7 @@ void toString(char *output, int num) {
   output[2] = (num / 10) + 48;
   num %= 10;
   output[3] = num + 48;
+  output[4] = 0;
 }
 
 unsigned char toNumber(char *input) {
