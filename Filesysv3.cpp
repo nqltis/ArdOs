@@ -87,10 +87,6 @@ void File::open() {
     if (!EEPROM.read(block * BLOCK_SIZE + i + BLOCK_AREA_OFFSET)) {i++; break;}
   }
   index = i;
-  if (index == BLOCK_SIZE - 1) {  //if at end of block
-    block = EEPROM.read(block * BLOCK_SIZE + BLOCK_ID_SIZE + BLOCK_AREA_OFFSET); //Jump to next block
-    index = 2*BLOCK_ID_SIZE;
-  }
   return;
 }
 
