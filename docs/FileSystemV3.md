@@ -9,7 +9,7 @@ The memory is split into three areas :
 
 ## File headers
 
-The file headers are currently 6-bytes wide. Here are the meaning of each of these bytes : 
+The file headers are currently 6-bytes wide. These bytes correspond to : 
 
 - 1 : File flags
 - 2 : Data Pointer
@@ -24,11 +24,11 @@ The most significant bit of the flags byte is used to mark the file header as fr
 
 ### Data Pointer
 
-This byte represents a data block ID (See ##Data Blocks). A file only points to one data block, the others are chained together from this first data block. The file name is located in the first data block of a file, so even directories have an allocated data block.
+This byte represents a data block ID (See ##Block Area). A file only points to one data block, the others are chained together from this first data block. The file name is located in the first data block of a file, so even directories have an allocated data block.
 
 ### Related Files Pointers
 
-The other bytes are pointers to `parent`, `child`, `previous` and `next` files (See #File Hierarchy), specifically pointers to their file headers. A file header pointer corresponds to the target file's ID. That means the file header of ID 13 is at memory address 6*13 (13th 6-byte header)
+The other bytes are pointers to `parent`, `child`, `previous` and `next` files (See #File Hierarchy), specifically pointers to their file headers. A file header pointer corresponds to the target file's header ID. That means the file header of ID 13 is at memory address 6*13 (13th 6-byte header)
 
 ## Block Map
 
@@ -103,4 +103,6 @@ When a file is opened using `open()`, `index` and `block` attributes are initial
 The `read()` function returns the byte pointed by `index` and then increments `index`. If end of file is reached, `index` is not incremented.
 
 The `write()` function writes the byte given as argument into memory at the address pointed by `index` and then increments `index`. If end of file is reached, a new block is reserved.
+
+The `rewind()` function decrements `index`.
 
