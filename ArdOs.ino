@@ -133,7 +133,6 @@ void controlMenu() {
       } break;
       case '3':{   //remove file
         char str[5];
-        str[4] = 0;
         lcdoutput.printScreen("", "");
         for (unsigned int i = 224; i < 272; i++) {
           toString(str, (i));
@@ -160,7 +159,6 @@ void controlMenu() {
       } break;
       case '5':{  //debug
         char str[5];
-        str[4] = 0;
         lcdoutput.printScreen("", "");
         for (unsigned int i = 0; i < 24; i++) {
           toString(str, i);
@@ -245,15 +243,14 @@ void loop() {
       controlMenu();
       printCurrent();
     break;
-/*          //Commented out to change file system and implement code execution progressively
     case '*':{ //Execute file
-      if (!workingDir.isExecutable()) break;
-      workingDir.open();
+      if (!file1.isExecutable()) break;
+      file1.open();
       ProgExec thread;
       char running = 1;
-      while(workingDir.dataRemaining() && running) {
-        char progbyte = workingDir.read();
-        char callcode = thread.execute(progbyte); */
+      while(running) {  //TODO: Check if at end of file
+        char progbyte = file1.read();
+        char callcode = thread.execute(progbyte);
         /* debug  
         char text[5];
         toString(text, progbyte);
@@ -267,30 +264,30 @@ void loop() {
         lcdoutput.drawchar(text[2], 14);
         lcdoutput.drawchar(text[3], 15);
         delay(1000);
-        // */   /*
+        // */
         if (callcode < 0) { //handle syscall
           switch (callcode) {
             case -1:  //ext
               running = 0; //end of program
             break;
-            case -2:  //slp I/R I/R
+            case -2:  //slp I I
               delay(thread.getArg(0, 2)); //waiting for two more arguments
             break;
             case -3: break; //lab I (no action on reading)
             case -4:{  //jmp I
-              //workingDir.open(); //Restart from the beggining to search for the label
+              file1.open(); //Restart from the beggining to search for the label
               char label = thread.getArg(0, 1); //TODO: switch to getRawArg()
               char searching = 1;
-              while (searching) {
-                if (thread.ignore(workingDir.read()) == -3) { //label found, checking ID
+              while (searching) { //TODO: handle label missing
+                if (thread.ignore(file1.read()) == -3) { //label found, checking ID
                   if (thread.getArg(0, 1) == label) searching = 0;  //right label found, exit jump
                 }
               }
             break;}
-            case -6:  //pch I/R I/R
+            case -6:  //pch I I
               lcdoutput.drawchar(thread.getArg(0, 1), thread.getArg(1, 1));
             break;
-            case -7:{ //pst I/R I/R     TODO: Handle >16 char calls
+            case -7:{ //pst I I     TODO: Handle >16 char calls
               char size = thread.getArg(1, 1);
               char line[16];
               thread.getProgMem(line, thread.getArg(0, 1), size);
@@ -318,7 +315,6 @@ void loop() {
       }
     printCurrent();
     } break;
-    */
   }
   delay(10);
 }
