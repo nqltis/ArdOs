@@ -95,8 +95,11 @@ unsigned char File::read() {  //Read next byte of open file
   if (block) byte = EEPROM.read(block * BLOCK_SIZE + BLOCK_AREA_OFFSET + index);
   else byte = 0;
   if (index == BLOCK_SIZE) {  //if at end of block
-    block = EEPROM.read(block * BLOCK_SIZE + BLOCK_ID_SIZE + BLOCK_AREA_OFFSET); //Jump to next block
-    index = 2*BLOCK_ID_SIZE;
+    BLOCK_ID_TYPE nextBlockId = EEPROM.read(BLOCK_AREA_OFFSET + block * BLOCK_SIZE + BLOCK_ID_SIZE); //go to next block
+    if (nextBlockId) {  //if next block is valid, continue on that block
+      block = nextBlockId;
+      index = 2*BLOCK_ID_SIZE;
+    }
   } else {
     index++;
   }
@@ -108,14 +111,16 @@ void File::write(unsigned char data) {
     EEPROM.write(BLOCK_AREA_OFFSET + block * BLOCK_SIZE + index, data);
   }
   if (index == BLOCK_SIZE) {  //if at end of block
-    BLOCK_ID_TYPE nextBlockId = BLOCK_AREA_OFFSET + block * BLOCK_SIZE + BLOCK_ID_SIZE; //go to next block
+    BLOCK_ID_TYPE nextBlockId = EEPROM.read(BLOCK_AREA_OFFSET + block * BLOCK_SIZE + BLOCK_ID_SIZE); //go to next block
     if (nextBlockId) {  //if next block is valid, continue on that block
       block = nextBlockId;
       index = 2*BLOCK_ID_SIZE;
     } else {  //else allocate a new block
-      BLOCK_ID_TYPE nextBlockId = getFreeBlock();  //try to get a new free block
+      nextBlockId = getFreeBlock();  //try to get a new free block
       if (nextBlockId) {  //if free block available, reserve that block
         reserveBlock(nextBlockId);
+        EEPROM.write(BLOCK_AREA_OFFSET + BLOCK_SIZE * block + BLOCK_ID_SIZE, nextBlockId); //Creat link on new block to old block
+        EEPROM.write(BLOCK_AREA_OFFSET + BLOCK_SIZE * nextBlockId, block);  //Create link on old block to new block
         block = nextBlockId;
         index = 2*BLOCK_ID_SIZE;
       }
@@ -203,6 +208,9 @@ void File::reserveBlock(BLOCK_ID_TYPE blockId) {  //Mark block as owned by an ex
   unsigned char targetByte = EEPROM.read(targetByteAddr);
   targetByte = targetByte | (1 << (blockId % 8));
   EEPROM.update(targetByteAddr, targetByte);
+  ABS_ADDR_TYPE blockLinksAddr = BLOCK_AREA_OFFSET + BLOCK_SIZE * blockId; //Reset block links
+  EEPROM.update(blockLinksAddr, 0);
+  EEPROM.update(blockLinksAddr + BLOCK_ID_SIZE, 0);
 }
 void File::freeBlock(BLOCK_ID_TYPE blockId) { //Mark block as unused
   ABS_ADDR_TYPE targetByteAddr = blockId/8 + BLOCK_MAP_OFFSET;
