@@ -94,7 +94,7 @@ unsigned char File::read() {  //Read next byte of open file
   unsigned char byte;
   if (block) byte = EEPROM.read(block * BLOCK_SIZE + BLOCK_AREA_OFFSET + index);
   else byte = 0;
-  if (index == BLOCK_SIZE) {  //if at end of block
+  if (index == BLOCK_SIZE - 1) {  //if at end of block
     BLOCK_ID_TYPE nextBlockId = EEPROM.read(BLOCK_AREA_OFFSET + block * BLOCK_SIZE + BLOCK_ID_SIZE); //go to next block
     if (nextBlockId) {  //if next block is valid, continue on that block
       block = nextBlockId;
@@ -110,7 +110,7 @@ void File::write(unsigned char data) {
   if (block) { //TODO: Reimplement verification of remaining memory
     EEPROM.write(BLOCK_AREA_OFFSET + block * BLOCK_SIZE + index, data);
   }
-  if (index == BLOCK_SIZE) {  //if at end of block
+  if (index == BLOCK_SIZE - 1) {  //if at end of block
     BLOCK_ID_TYPE nextBlockId = EEPROM.read(BLOCK_AREA_OFFSET + block * BLOCK_SIZE + BLOCK_ID_SIZE); //go to next block
     if (nextBlockId) {  //if next block is valid, continue on that block
       block = nextBlockId;
