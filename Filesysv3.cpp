@@ -130,7 +130,7 @@ void File::write(unsigned char data) {
   }
 }
 
-char File::rewind() { //rewind data index of open file
+char File::indexDecrement() { //rewind data index of open file
   if (index == 2*BLOCK_ID_SIZE) { //if at start of a block, jump to previous block
     BLOCK_ID_TYPE previousBlockId = EEPROM.read(BLOCK_AREA_OFFSET + block * BLOCK_SIZE);
     if (previousBlockId) {  //if block valid, jump
@@ -145,7 +145,7 @@ char File::rewind() { //rewind data index of open file
   return 1;
 }
 
-char File::skip() {
+char File::indexIncrement() {
   if (index == BLOCK_ID_SIZE - 1) { //if at end of a block, jump to next block
     BLOCK_ID_TYPE nextBlockId = EEPROM.read(BLOCK_AREA_OFFSET + block * BLOCK_SIZE + BLOCK_ID_SIZE);
     if (nextBlockId) {  //if block valid, jump

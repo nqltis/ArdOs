@@ -323,7 +323,7 @@ void editFile(File file) {
   file.open();
   toString(buff1, file.read());
   toString(buff2, file.read());
-  file.rewind();
+  file.indexDecrement();
   lcdoutput.printScreen(buff1, buff2);
   unsigned char screenCursor = 0;
   lcdoutput.drawchar('<', 5);
@@ -334,11 +334,11 @@ void editFile(File file) {
       case 'A': //Scroll up
         if (screenCursor) {
           screenCursor = 0;
-        } else if (file.rewind()) {
-          file.rewind();
+        } else if (file.indexDecrement()) {
+          file.indexDecrement();
           toString(buff1, file.read());
           toString(buff2, file.read());
-          file.rewind();
+          file.indexDecrement();
           lcdoutput.printScreen(buff1, buff2);
         } else file.read();
         lcdoutput.drawchar('<', 5);
@@ -348,7 +348,7 @@ void editFile(File file) {
         if (screenCursor) {
           toString(buff1, file.read());
           toString(buff2, file.read());
-          file.rewind();
+          file.indexDecrement();
           lcdoutput.printScreen(buff1, buff2);
         } else {
           screenCursor = 1;
@@ -361,9 +361,9 @@ void editFile(File file) {
       case 'D': //Enter new value
         stringInput(buff2, buff1);  //Get user input
         file.write(toNumber(buff2));  //Write input to memory
-        file.rewind();      //Read freshly written byte
+        file.indexDecrement();      //Read freshly written byte
         toString(buff2, file.read());
-        file.rewind();
+        file.indexDecrement();
         lcdoutput.printScreen(buff1, buff2);  //Refresh display
       break;
       default:

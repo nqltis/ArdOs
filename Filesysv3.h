@@ -45,8 +45,8 @@ class File
     void mkexe(File workingDir, char *name);
     unsigned char read();
     void write(unsigned char data);
-    char rewind();
-    char skip();
+    char indexDecrement();
+    char indexIncrement();
     unsigned char readRawMem(unsigned int pos);//debug
   private:
     HEADER_ID_TYPE headerPtr;
