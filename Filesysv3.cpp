@@ -91,19 +91,8 @@ void File::open() {
 }
 
 unsigned char File::read() {  //Read next byte of open file
-  unsigned char byte;
-  if (block) byte = EEPROM.read(block * BLOCK_SIZE + BLOCK_AREA_OFFSET + index);
-  else byte = 0;
-  if (index == BLOCK_SIZE - 1) {  //if at end of block
-    BLOCK_ID_TYPE nextBlockId = EEPROM.read(BLOCK_AREA_OFFSET + block * BLOCK_SIZE + BLOCK_ID_SIZE); //go to next block
-    if (nextBlockId) {  //if next block is valid, continue on that block
-      block = nextBlockId;
-      index = 2*BLOCK_ID_SIZE;
-    }
-  } else {
-    index++;
-  }
-  return byte;
+  if (block) return EEPROM.read(block * BLOCK_SIZE + BLOCK_AREA_OFFSET + index);
+  else return 0;
 }
 
 void File::write(unsigned char data) {
@@ -125,8 +114,6 @@ void File::write(unsigned char data) {
         index = 2*BLOCK_ID_SIZE;
       }
     }
-  } else {
-    index++;
   }
 }
 
