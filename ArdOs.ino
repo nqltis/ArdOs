@@ -322,8 +322,8 @@ void loop() {
 void editFile(File file) {
   file.open();
   toString(buff1, file.read());
+  file.indexIncrement();
   toString(buff2, file.read());
-  file.indexDecrement();
   lcdoutput.printScreen(buff1, buff2);
   unsigned char screenCursor = 0;
   lcdoutput.drawchar('<', 5);
@@ -334,24 +334,27 @@ void editFile(File file) {
       case 'A': //Scroll up
         if (screenCursor) {
           screenCursor = 0;
-        } else if (file.indexDecrement()) {
           file.indexDecrement();
-          toString(buff1, file.read());
+        } else if (file.indexDecrement()) {
+          file.indexIncrement();
           toString(buff2, file.read());
           file.indexDecrement();
+          toString(buff1, file.read());
           lcdoutput.printScreen(buff1, buff2);
-        } else file.read();
+        }
         lcdoutput.drawchar('<', 5);
         lcdoutput.drawchar(' ', 21);
       break;
       case 'B': //Scroll down
-        if (screenCursor) {
-          toString(buff1, file.read());
-          toString(buff2, file.read());
+        if (file.indexIncrement()) {
           file.indexDecrement();
+          toString(buff1, file.read());
+          file.indexIncrement();
+          toString(buff2, file.read());
           lcdoutput.printScreen(buff1, buff2);
         } else {
           screenCursor = 1;
+          file.indexIncrement();
         }
         lcdoutput.drawchar(' ', 5);
         lcdoutput.drawchar('<', 21);
@@ -359,11 +362,15 @@ void editFile(File file) {
       case 'C': //Exit file
       break;
       case 'D': //Enter new value
-        stringInput(buff2, buff1);  //Get user input
-        file.write(toNumber(buff2));  //Write input to memory
-        file.indexDecrement();      //Read freshly written byte
-        toString(buff2, file.read());
-        file.indexDecrement();
+        if (screenCursor) {
+          stringInput(buff2, buff2);
+          file.write(toNumber(buff2));  //Write input to memory
+          toString(buff2, file.read());
+        } else {
+          stringInput(buff1, buff1);
+          file.write(toNumber(buff1));  //Write input to memory
+          toString(buff2, file.read());
+        }
         lcdoutput.printScreen(buff1, buff2);  //Refresh display
       break;
       default:
