@@ -12,7 +12,7 @@
 class LCDoutput
 {
     public:
-      LCDoutput(const byte RS, const byte RW, const byte E, const byte DataPins[8]);
+      LCDoutput(const byte RS, const byte RW, const byte E, const byte LCDDATA, const byte LCDCLK);
       void drawchar(char chr, byte pos);
       void printScreen(char *line1, char *line2);
       void init();
@@ -20,7 +20,8 @@ class LCDoutput
       byte _rs;
       byte _rw;
       byte _e;
-      byte _datapins[8];
+      byte _data;
+      byte _clk;
       void pulse();
       void senddata(byte data);
       void execinstr(byte data);

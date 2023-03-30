@@ -7,23 +7,22 @@
 #include "Arduino.h"
 #include "LCDoutput.h"
 
-LCDoutput::LCDoutput(const byte RS, const byte RW,const byte E,const byte DataPins[8]) {
-  for (byte i = 0; i < 8; i++) {
-    _datapins[i] = DataPins[i];
-  }
+LCDoutput::LCDoutput(const byte RS, const byte RW, const byte E, const byte LCDDATA, const byte LCDCLK) {
   _rs = RS;
   _rw = RW;
   _e = E;
+  _data = LCDDATA;
+  _clk = LCDCLK;
   pinMode(_rs, OUTPUT);
   pinMode(_rw, OUTPUT);
   pinMode(_e, OUTPUT);
+  pinMode(_data, OUTPUT);
+  pinMode(_clk, OUTPUT);
   digitalWrite(_rs, LOW);
   digitalWrite(_rw, LOW);
   digitalWrite(_e, LOW);
-  for (byte i = 0; i < 8; i++) {
-    pinMode(_datapins[i], OUTPUT);
-    digitalWrite(_datapins[i], LOW);
-  }
+  digitalWrite(_data, LOW);
+  digitalWrite(_clk, LOW);
 }
 
 void LCDoutput::init() {
@@ -46,8 +45,12 @@ void LCDoutput::pulse() {
 
 void LCDoutput::dwrite(byte data) {
   for (byte i = 0; i < 8; i++) {
-    digitalWrite(_datapins[i], !!(data & (1 << i)));
+    digitalWrite(_data, !!(data & (1 << i)));
+    digitalWrite(_clk, HIGH);
+    digitalWrite(_clk, LOW);
   }
+  digitalWrite(_clk, HIGH);
+  digitalWrite(_clk, LOW);
 }
 
 void LCDoutput::execinstr(byte data) {

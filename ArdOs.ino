@@ -14,10 +14,9 @@ M16input m16input(InputPin);
 const byte RS = 13;   //Register Select: H:data L:Instruction 
 const byte RW = 12;   //H:Read L:Write
 const byte E = 11;    //Enable Signal
-const byte DataPin[8] = {
-  8, 9, 2, 3, 4, 5, 6, 7
-};
-LCDoutput lcdoutput(RS, RW, E, DataPin);
+const byte LCDDATA = 7;
+const byte LCDCLK = 6;
+LCDoutput lcdoutput(RS, RW, E, LCDDATA, LCDCLK);
 
 File workingDir(0);  //root
 File file1;
