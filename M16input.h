@@ -12,7 +12,7 @@
 class M16input
 {
     public:
-      M16input(byte InputPins[8]);
+      M16input(const byte InputPins[8]);
       char button();
     private:
       byte inRead();

@@ -7,7 +7,7 @@
 #include "Arduino.h"
 #include "LCDoutput.h"
 
-LCDoutput::LCDoutput(byte RS, byte RW, byte E, byte DataPins[8]) {
+LCDoutput::LCDoutput(const byte RS, const byte RW,const byte E,const byte DataPins[8]) {
   for (byte i = 0; i < 8; i++) {
     _datapins[i] = DataPins[i];
   }

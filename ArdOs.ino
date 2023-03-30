@@ -250,6 +250,7 @@ void loop() {
       char running = 1;
       while(running) {  //TODO: Check if at end of file
         char progbyte = file1.read();
+        file1.indexIncrement();
         char callcode = thread.execute(progbyte);
         /* debug  
         char text[5];
@@ -282,6 +283,7 @@ void loop() {
                 if (thread.ignore(file1.read()) == -3) { //label found, checking ID
                   if (thread.getArg(0, 1) == label) searching = 0;  //right label found, exit jump
                 }
+                file1.indexIncrement();
               }
             break;}
             case -6:  //pch I I
