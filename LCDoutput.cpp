@@ -7,19 +7,16 @@
 #include "Arduino.h"
 #include "LCDoutput.h"
 
-LCDoutput::LCDoutput(const byte RS, const byte RW, const byte E, const byte LCDDATA, const byte LCDCLK) {
+LCDoutput::LCDoutput(const byte RS, const byte E, const byte LCDDATA, const byte LCDCLK) {
   _rs = RS;
-  _rw = RW;
   _e = E;
   _data = LCDDATA;
   _clk = LCDCLK;
   pinMode(_rs, OUTPUT);
-  pinMode(_rw, OUTPUT);
   pinMode(_e, OUTPUT);
   pinMode(_data, OUTPUT);
   pinMode(_clk, OUTPUT);
   digitalWrite(_rs, LOW);
-  digitalWrite(_rw, LOW);
   digitalWrite(_e, LOW);
   digitalWrite(_data, LOW);
   digitalWrite(_clk, LOW);

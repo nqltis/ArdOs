@@ -12,11 +12,10 @@ const byte InputPin[8] = {
 M16input m16input(InputPin);
 
 const byte RS = 5;   //Register Select: H:data L:Instruction 
-const byte RW = 6;   //H:Read L:Write
 const byte E = 7;    //Enable Signal
 const byte LCDDATA = 8;
 const byte LCDCLK = 9;
-LCDoutput lcdoutput(RS, RW, E, LCDDATA, LCDCLK);
+LCDoutput lcdoutput(RS, E, LCDDATA, LCDCLK);
 
 File workingDir(0);  //root
 File file1;
