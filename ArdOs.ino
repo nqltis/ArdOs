@@ -11,7 +11,7 @@ const byte InputPin[8] = {
 };
 M16input m16input(InputPin);
 
-const byte RS = 5;   //Register Select: H:data L:Instruction 
+const byte RS = 6;   //Register Select: H:data L:Instruction 
 const byte E = 7;    //Enable Signal
 const byte LCDDATA = 8;
 const byte LCDCLK = 9;
@@ -311,6 +311,9 @@ void loop() {
             }
             break;
           }
+        }
+        if (m16input.button() == '*') { //If '*' is pressed, stop execution
+          running = false; 
         }
       }
     printCurrent();
