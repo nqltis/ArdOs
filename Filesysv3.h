@@ -27,7 +27,7 @@ class File
   public:
     File();
     File(HEADER_ID_TYPE _headerPtr);
-    void initfs(int offset);
+    static void initfs(int offset);
     char isValid();
     char isDir();
     char isExecutable();
@@ -40,25 +40,25 @@ class File
     char dataRemaining();
     //unsigned char read();
     void pathString(char *output);
-    void mkfile(File workingDir, char *name);
-    void mkdir(File workingDir, char *name);
-    void mkexe(File workingDir, char *name);
+    static void mkfile(File workingDir, char *name);
+    static void mkdir(File workingDir, char *name);
+    static void mkexe(File workingDir, char *name);
     unsigned char read();
     void write(unsigned char data);
     char indexDecrement();
     char indexIncrement();
-    unsigned char readRawMem(unsigned int pos);//debug
+    static unsigned char readRawMem(unsigned int pos);//debug
   private:
     HEADER_ID_TYPE headerPtr;
     BLOCK_ID_TYPE block;  //Set when open
     unsigned char index;  //Set when open
     HEADER_ID_TYPE getHeader();
     BLOCK_ID_TYPE getFirstBlock();
-    BLOCK_ID_TYPE getFreeBlock();
-    HEADER_ID_TYPE getFreeHeader();
-    void reserveBlock(BLOCK_ID_TYPE blockId);
-    void freeBlock(BLOCK_ID_TYPE blockId);
-    void makefile(File workingDir, char *name, unsigned char flags);
+    static BLOCK_ID_TYPE getFreeBlock();
+    static HEADER_ID_TYPE getFreeHeader();
+    static void reserveBlock(BLOCK_ID_TYPE blockId);
+    static void freeBlock(BLOCK_ID_TYPE blockId);
+    static void makefile(File workingDir, char *name, unsigned char flags);
 };
 
 #endif
