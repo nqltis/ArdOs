@@ -40,7 +40,7 @@ void setup() {
         break;
         case '1':
           lcdoutput.printScreen("Erasing Memory &", "Initializing");
-          workingDir.initfs(0);
+          File::initfs(0);
           inMenu = 0;
         break;
       }
@@ -109,7 +109,7 @@ void controlMenu() {
         if (inputStr[0] == 255) break;
         inputStr[14] = 0;
         lcdoutput.printScreen("Created file :", inputStr);
-        workingDir.mkfile(workingDir, inputStr);
+        File::mkfile(workingDir, inputStr);
         delay(1000);
         
         if (!file1.isValid()) file1 = workingDir.getChild();
@@ -121,7 +121,7 @@ void controlMenu() {
         stringInput(inputStr, "New dir name :");
         if (inputStr[0] == 255) break;
         inputStr[14] = 0;
-        workingDir.mkdir(workingDir, inputStr);
+        File::mkdir(workingDir, inputStr);
         lcdoutput.printScreen("Created dir :", inputStr);
         delay(1000);
         
@@ -135,7 +135,7 @@ void controlMenu() {
         for (unsigned int i = 224; i < 272; i++) {
           toString(str, (i));
           lcdoutput.printScreen(str, "");
-          char val = workingDir.readRawMem(i);
+          char val = File::readRawMem(i);
           if (val > 32) lcdoutput.drawchar(val, 31);
           else lcdoutput.drawchar(val + 48, 31);
           delay(1000);
@@ -147,7 +147,7 @@ void controlMenu() {
         stringInput(inputStr, "New exe name :");
         if (inputStr[0] == 255) break;
         inputStr[14] = 0;
-        workingDir.mkexe(workingDir, inputStr);
+        File::mkexe(workingDir, inputStr);
         lcdoutput.printScreen("Created exe :", inputStr);
         delay(1000);
         
@@ -161,7 +161,7 @@ void controlMenu() {
         for (unsigned int i = 0; i < 24; i++) {
           toString(str, i);
           lcdoutput.printScreen(str, "");
-          char val = workingDir.readRawMem(i);
+          char val = File::readRawMem(i);
           if (val > 32) lcdoutput.drawchar(val, 31);
           else lcdoutput.drawchar(val + 48, 31);
           delay(1000);
@@ -170,7 +170,7 @@ void controlMenu() {
       } break;
       case '6':   //initfs
         lcdoutput.printScreen("Erasing Memory &", "Initializing");
-        workingDir.initfs(0);
+        File::initfs(0);
         file1 = File();
         inMenu = 0;
       break;
