@@ -6,10 +6,13 @@
 #include "T9typelib.h"
 #include "ProgExec.h"
 
-const byte InputPin[8] = {
-  0, 1, A5, A4, A3, A2, A1, A0
+const byte OutputPin[2] = {
+  4, 5
 };
-M16input m16input(InputPin);
+const byte InputPin[4] = {
+  A3, A2, A1, A0
+};
+M16input m16input(OutputPin, InputPin);
 
 const byte RS = 6;   //Register Select: H:data L:Instruction 
 const byte E = 7;    //Enable Signal

@@ -12,14 +12,15 @@
 class M16input
 {
     public:
-      M16input(const byte InputPins[8]);
+      M16input(const byte OutputPins[2], const byte InputPins[4]);
       char button();
     private:
       byte inRead();
       char translate(byte inbyte);
       byte _oldinput;
       byte _newinput;
-      byte _inputpins[8];
+      byte _inputpins[4];
+      byte _outputpins[2];
 };
 
 #endif
